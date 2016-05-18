@@ -23,7 +23,7 @@ Implementation:
 #include <iterator>
 
 // user include files
-#include "CSCUCLA/CSCDigiTuples/src/CSCPatterns.h"
+#include "CSCUCLA/CSCDigiTuples/include/CSCPatterns.h"
 //
 
 
