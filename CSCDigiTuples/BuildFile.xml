@@ -16,4 +16,7 @@
 <use   name="DataFormats/L1GlobalMuonTrigger"/>
 <use   name="EventFilter/CSCRawToDigi"/>
 <use   name="RecoMuon/TrackingTools"/>
-<flags   EDM_PLUGIN="1"/>
+<export>
+  <lib   name="1"/>
+</export>
+
