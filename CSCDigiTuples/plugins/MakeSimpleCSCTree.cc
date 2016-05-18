@@ -28,7 +28,7 @@
 #include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
 #include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
-#include "CSCUCLA/CSCDigiTuples/src/MuonQualityCuts.h"
+#include "CSCUCLA/CSCDigiTuples/include/MuonQualityCuts.h"
 #include "DataFormats/CSCRecHit/interface/CSCSegmentCollection.h"
 #include "DataFormats/CSCRecHit/interface/CSCSegment.h"
 #include "FWCore/Utilities/interface/InputTag.h"
