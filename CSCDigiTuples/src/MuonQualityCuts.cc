@@ -1,5 +1,5 @@
 // user include files
-#include "CSCUCLA/CSCDigiTuples/src/MuonQualityCuts.h"
+#include "CSCUCLA/CSCDigiTuples/include/MuonQualityCuts.h"
 //
 // constructors and destructor
 //
