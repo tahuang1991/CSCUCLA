@@ -33,11 +33,13 @@ process.source = cms.Source ("PoolSource",
 )
 process.MessageLogger = cms.Service("MessageLogger",
     cout = cms.untracked.PSet(
-        default = cms.untracked.PSet( limit = cms.untracked.int32(100) ),
+        default = cms.untracked.PSet( limit = cms.untracked.int32(-1) ),
         FwkJob = cms.untracked.PSet( limit = cms.untracked.int32(0) )
     ),
     categories = cms.untracked.vstring('FwkJob'),
-    destinations = cms.untracked.vstring('cout')
+    destinations = cms.untracked.vstring('cout'),
+     debugModules = cms.untracked.vstring('*'),
+     threshold = cms.untracked.string('DEBUG') 
 )
 
 
