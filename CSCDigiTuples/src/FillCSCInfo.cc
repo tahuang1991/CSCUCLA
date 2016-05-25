@@ -156,4 +156,29 @@ void FillSegmentInfo::fill(const CSCSegmentCollection& segments, const CSCRecHit
 }
 }
 
+void FillCLCTInfo::fill(const CSCCLCTDigiCollection& clcts){
+  reset();
+
+  for(CSCCLCTDigiCollection::DigiRangeIterator chamber=clcts.begin(); chamber != clcts.end(); chamber++) {
+    CSCDetId id = (*chamber).first;
+    const CSCCLCTDigiCollection::Range& range =(*chamber).second;
+    for(CSCCLCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
+    {
+
+      clct_id         .push_back(CSCHelper::chamberSerial(id));
+      clct_isvalid    .push_back(CSCHelper::convertTo<size8>(digiItr->isValid()  ,"clct_isvalid"  ));
+      clct_quality    .push_back(CSCHelper::convertTo<size8>(digiItr->getQuality()  ,"clct_quality"  ));
+      clct_pattern    .push_back(CSCHelper::convertTo<size8>(digiItr->getPattern()  ,"clct_pattern"  ));
+      clct_stripType  .push_back(CSCHelper::convertTo<size8>(digiItr->getStripType()  ,"clct_stripType"));
+      clct_bend       .push_back(CSCHelper::convertTo<size8>(digiItr->getBend()  ,"clct_bend"     ));
+      clct_halfStrip  .push_back(CSCHelper::convertTo<size8>(digiItr->getStrip()  ,"clct_halfStrip"));
+      clct_CFEB       .push_back(CSCHelper::convertTo<size8>(digiItr->getCFEB()  ,"clct_CFEB"     ));
+      clct_BX         .push_back(CSCHelper::convertTo<size8>(digiItr->getBX()  ,"clct_BX"       ));
+      clct_trkNumber  .push_back(CSCHelper::convertTo<size8>(digiItr->getTrknmb()  ,"clct_trkNumber"));
+      clct_keyStrip   .push_back(CSCHelper::convertTo<size8>(digiItr->getKeyStrip()  ,"clct_keyStrip" ));
+    }
+
+}
+}
+
 

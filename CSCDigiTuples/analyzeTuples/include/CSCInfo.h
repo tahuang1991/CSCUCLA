@@ -218,6 +218,54 @@ public:
 };
 
 
+class CLCTInfo {
+public:
+  std::vector<size16>* clct_id          ;
+  std::vector<size8> * clct_isvalid     ;
+  std::vector<size8> * clct_quality     ;
+  std::vector<size8> * clct_pattern     ;
+  std::vector<size8> * clct_stripType   ;
+  std::vector<size8> * clct_bend        ;
+  std::vector<size8> * clct_halfStrip   ;
+  std::vector<size8> * clct_CFEB        ;
+  std::vector<size8> * clct_BX          ;
+  std::vector<size8> * clct_trkNumber   ;
+  std::vector<size8> * clct_keyStrip    ;
+
+
+  CLCTInfo() {
+    clct_id         = new  std::vector<size16>;
+    clct_isvalid    = new  std::vector<size8> ;
+    clct_quality    = new  std::vector<size8> ;
+    clct_pattern    = new  std::vector<size8> ;
+    clct_stripType  = new  std::vector<size8> ;
+    clct_bend       = new  std::vector<size8> ;
+    clct_halfStrip  = new  std::vector<size8> ;
+    clct_CFEB       = new  std::vector<size8> ;
+    clct_BX         = new  std::vector<size8> ;
+    clct_trkNumber  = new  std::vector<size8> ;
+    clct_keyStrip   = new  std::vector<size8> ;
+
+
+  }
+
+  void load(BaseTupleAnalyzer * analyzer) {
+
+    analyzer->setBranchAddress("clct_id"         , &clct_id        );
+    analyzer->setBranchAddress("clct_isvalid"    , &clct_isvalid   );
+    analyzer->setBranchAddress("clct_quality"    , &clct_quality   );
+    analyzer->setBranchAddress("clct_pattern"    , &clct_pattern   );
+    analyzer->setBranchAddress("clct_stripType"  , &clct_stripType );
+    analyzer->setBranchAddress("clct_bend"       , &clct_bend      );
+    analyzer->setBranchAddress("clct_halfStrip"  , &clct_halfStrip );
+    analyzer->setBranchAddress("clct_CFEB"       , &clct_CFEB      );
+    analyzer->setBranchAddress("clct_BX"         , &clct_BX        );
+    analyzer->setBranchAddress("clct_trkNumber"  , &clct_trkNumber );
+    analyzer->setBranchAddress("clct_keyStrip"   , &clct_keyStrip  );
+  }
+};
+
+
 
 
 #endif
