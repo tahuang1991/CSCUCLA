@@ -9,7 +9,7 @@
 #include <DataFormats/CSCDigi/interface/CSCComparatorDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCSegmentCollection.h>
-
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 #include "CSCUCLA/CSCDigiTuples/include/CSCHelper.h"
 
 #include "TFile.h"
@@ -344,6 +344,62 @@ private:
 
   void fill(const CSCSegmentCollection& segments, const CSCRecHit2DCollection * recHits = 0);
   size16 findRecHitIdx(const CSCRecHit2D& hit, const CSCRecHit2DCollection* allRecHits);
+
+};
+
+class FillCLCTInfo : public FillInfo {
+public:
+
+  FillCLCTInfo(TreeContainer& tree) :FillInfo(tree) {
+
+    book("clct_id"         , clct_id        );
+    book("clct_isvalid"    , clct_isvalid   );
+    book("clct_quality"    , clct_quality   );
+    book("clct_pattern"    , clct_pattern   );
+    book("clct_stripType"  , clct_stripType );
+    book("clct_bend"       , clct_bend      );
+    book("clct_halfStrip"  , clct_halfStrip );
+    book("clct_CFEB"       , clct_CFEB      );
+    book("clct_BX"         , clct_BX        );
+    book("clct_trkNumber"  , clct_trkNumber );
+    book("clct_keyStrip"   , clct_keyStrip  );
+
+
+
+  }
+  virtual ~FillCLCTInfo() {};
+
+private:
+   std::vector<size16> clct_id          ;
+   std::vector<size8>  clct_isvalid     ;
+   std::vector<size8>  clct_quality     ;
+   std::vector<size8>  clct_pattern     ;
+   std::vector<size8>  clct_stripType   ;
+   std::vector<size8>  clct_bend        ;
+   std::vector<size8>  clct_halfStrip   ;
+   std::vector<size8>  clct_CFEB        ;
+   std::vector<size8>  clct_BX          ;
+   std::vector<size8>  clct_trkNumber   ;
+   std::vector<size8>  clct_keyStrip    ;
+
+
+  virtual void reset(){
+    clct_id         .clear();
+    clct_isvalid    .clear();
+    clct_quality    .clear();
+    clct_pattern    .clear();
+    clct_stripType  .clear();
+    clct_bend       .clear();
+    clct_halfStrip  .clear();
+    clct_CFEB       .clear();
+    clct_BX         .clear();
+    clct_trkNumber  .clear();
+    clct_keyStrip   .clear();
+  }
+
+  public:
+
+  void fill(const CSCCLCTDigiCollection& clcts);
 
 };
 
