@@ -265,6 +265,42 @@ public:
   }
 };
 
+class ALCTInfo {
+public:
+  std::vector<size16>* alct_id          ;
+  std::vector<size8> * alct_isvalid     ;
+  std::vector<size8> * alct_quality     ;
+  std::vector<size8> * alct_accel       ;
+  std::vector<size8> * alct_collB       ;
+  std::vector<size8> * alct_wireGroup   ;
+  std::vector<size8> * alct_BX          ;
+  std::vector<size8> * alct_trkNumber   ;
+
+
+  ALCTInfo() {
+    alct_id         = new  std::vector<size16>;
+    alct_isvalid    = new  std::vector<size8> ;
+    alct_quality    = new  std::vector<size8> ;
+    alct_accel      = new  std::vector<size8> ;
+    alct_collB      = new  std::vector<size8> ;
+    alct_wireGroup  = new  std::vector<size8> ;
+    alct_BX         = new  std::vector<size8> ;
+    alct_trkNumber  = new  std::vector<size8> ;
+
+  }
+
+  void load(BaseTupleAnalyzer * analyzer) {
+
+    analyzer->setBranchAddress("alct_id"         , &alct_id        );
+    analyzer->setBranchAddress("alct_isvalid"    , &alct_isvalid   );
+    analyzer->setBranchAddress("alct_quality"    , &alct_quality   );
+    analyzer->setBranchAddress("alct_accel"    , &alct_accel   );
+    analyzer->setBranchAddress("alct_collB"    , &alct_collB   );
+    analyzer->setBranchAddress("alct_wireGroup"    , &alct_wireGroup   );
+    analyzer->setBranchAddress("alct_BX"         , &alct_BX        );
+    analyzer->setBranchAddress("alct_trkNumber"  , &alct_trkNumber );
+  }
+};
 
 
 
