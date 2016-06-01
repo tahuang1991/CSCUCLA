@@ -33,6 +33,7 @@ class MakeSimpleCSCTree : public edm::EDAnalyzer {
         edm::EDGetTokenT<CSCCorrelatedLCTDigiCollection> ld_token;
         edm::EDGetTokenT<CSCSegmentCollection> seg_token;
         edm::EDGetTokenT<CSCCLCTDigiCollection> cd_token;
+        edm::EDGetTokenT<CSCALCTDigiCollection> ad_token;
 
 
         TreeContainer tree;
@@ -44,6 +45,7 @@ class MakeSimpleCSCTree : public edm::EDAnalyzer {
         FillLCTInfo lctInfo;
         FillSegmentInfo segmentInfo;
         FillCLCTInfo clctInfo;
+        FillALCTInfo alctInfo;
 
 };
 
@@ -59,6 +61,7 @@ MakeSimpleCSCTree::MakeSimpleCSCTree(const edm::ParameterSet& iConfig) :
   , lctInfo(tree)
   , segmentInfo(tree)
   , clctInfo(tree)
+  , alctInfo(tree)
 {
       rh_token = consumes<CSCRecHit2DCollection>( iConfig.getParameter<edm::InputTag>("recHitTag") );
       sd_token = consumes<CSCStripDigiCollection>( iConfig.getParameter<edm::InputTag>("stripDigiTag") );
@@ -67,6 +70,7 @@ MakeSimpleCSCTree::MakeSimpleCSCTree(const edm::ParameterSet& iConfig) :
       ld_token = consumes<CSCCorrelatedLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("lctDigiTag") );
       seg_token  = consumes<CSCSegmentCollection>(iConfig.getParameter<edm::InputTag>("segmentTag")) ;
       cd_token = consumes<CSCCLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("clctDigiTag") );
+      ad_token = consumes<CSCALCTDigiCollection>( iConfig.getParameter<edm::InputTag>("alctDigiTag") );
 
 }
 
@@ -110,6 +114,10 @@ MakeSimpleCSCTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   edm::Handle<CSCCLCTDigiCollection> cscCLCTDigi;
   iEvent.getByToken(cd_token, cscCLCTDigi);
   clctInfo.fill(*cscCLCTDigi);
+
+  edm::Handle<CSCALCTDigiCollection> cscALCTDigi;
+  iEvent.getByToken(ad_token, cscALCTDigi);
+  alctInfo.fill(*cscALCTDigi);
 
   tree.fill();
 }

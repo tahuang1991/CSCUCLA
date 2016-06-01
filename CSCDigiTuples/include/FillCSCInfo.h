@@ -10,6 +10,7 @@
 #include <DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCSegmentCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
 #include "CSCUCLA/CSCDigiTuples/include/CSCHelper.h"
 
 #include "TFile.h"
@@ -403,5 +404,51 @@ private:
 
 };
 
+class FillALCTInfo : public FillInfo {
+public:
+
+  FillALCTInfo(TreeContainer& tree) :FillInfo(tree) {
+
+    book("alct_id"         , alct_id        );
+    book("alct_isvalid"    , alct_isvalid   );
+    book("alct_quality"    , alct_quality   );
+    book("alct_accel"      , alct_accel     );
+    book("alct_collB"      , alct_collB     );
+    book("alct_wireGroup"  , alct_wireGroup );
+    book("alct_BX"         , alct_BX        );
+    book("alct_trkNumber"  , alct_trkNumber );
+
+
+
+  }
+  virtual ~FillALCTInfo() {};
+
+private:
+   std::vector<size16> alct_id          ;
+   std::vector<size8>  alct_isvalid     ;
+   std::vector<size8>  alct_quality     ;
+   std::vector<size8>  alct_accel       ;
+   std::vector<size8>  alct_collB       ;
+   std::vector<size8>  alct_wireGroup   ;
+   std::vector<size8>  alct_BX          ;
+   std::vector<size8>  alct_trkNumber   ;
+
+
+  virtual void reset(){
+    alct_id         .clear();
+    alct_isvalid    .clear();
+    alct_quality    .clear();
+    alct_accel      .clear();
+    alct_collB      .clear();
+    alct_wireGroup  .clear();
+    alct_BX         .clear();
+    alct_trkNumber  .clear();
+  }
+
+  public:
+
+  void fill(const CSCALCTDigiCollection& alcts);
+
+};
 
 #endif /*CSCUCLA_CSCDIGITUPLES_FILLCSCINFO_H*/
