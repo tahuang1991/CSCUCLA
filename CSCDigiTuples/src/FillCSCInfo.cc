@@ -85,6 +85,7 @@ void FillWireInfo::fill(const CSCWireDigiCollection& wires){
         wire_lay .push_back(CSCHelper::convertTo<size8>(layer,"wire_lay"));
         wire_grp .push_back(CSCHelper::convertTo<size8>((*digiItr).getWireGroup(),"wire_grp"));
         wire_time.push_back(CSCHelper::convertTo<size8>((*digiItr).getTimeBin(),"wire_time"));
+        wire_bx.push_back(CSCHelper::convertTo<int>((*digiItr).getWireGroupBX(),"wire_bx"));
       }
   }
 
