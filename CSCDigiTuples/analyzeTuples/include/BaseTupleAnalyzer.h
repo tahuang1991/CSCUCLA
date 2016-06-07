@@ -15,7 +15,7 @@ public:
     assert(file);
     tree = (TTree*)(file->Get(treeName) );
     assert(tree);
-    tree->SetBranchStatus("*",0);
+//    tree->SetBranchStatus("*",0);
     std::clog << tree->GetEntries() << " entries to process" << std::endl;
   }
 

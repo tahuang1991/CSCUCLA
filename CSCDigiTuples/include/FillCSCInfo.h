@@ -215,6 +215,7 @@ public:
     book("wire_lay"    ,wire_lay        );
     book("wire_grp"    ,wire_grp        );
     book("wire_time"   ,wire_time       );
+    book("wire_bx"     ,wire_bx         );
 
 
 
@@ -226,6 +227,7 @@ private:
   std::vector<size8>      wire_lay ;
   std::vector<size8>      wire_grp ;
   std::vector<size8>      wire_time;
+  std::vector<int>        wire_bx;
 
 
   virtual void reset(){
@@ -233,6 +235,7 @@ private:
     wire_lay  .clear();
     wire_grp  .clear();
     wire_time .clear();
+    wire_bx   .clear();
   }
 
   public:

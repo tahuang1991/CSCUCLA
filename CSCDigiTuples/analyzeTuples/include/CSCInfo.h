@@ -116,6 +116,7 @@ public:
   std::vector<size8>     *                       wire_lay ;
   std::vector<size8>     *                       wire_grp ;
   std::vector<size8>     *                       wire_time;
+  std::vector<int  >     *                       wire_bx  ;
 
 
   WireInfo() {
@@ -123,6 +124,7 @@ public:
     wire_lay = new std::vector<size8> ;
     wire_grp = new std::vector<size8> ;
     wire_time= new std::vector<size8> ;
+    wire_bx  = new std::vector<int  > ;
 
 
   }
@@ -132,6 +134,7 @@ public:
     analyzer->setBranchAddress("wire_lay"    ,&wire_lay );
     analyzer->setBranchAddress("wire_grp"    ,&wire_grp );
     analyzer->setBranchAddress("wire_time"   ,&wire_time);
+    analyzer->setBranchAddress("wire_bx"     ,&wire_bx   );
   }
 };
 
