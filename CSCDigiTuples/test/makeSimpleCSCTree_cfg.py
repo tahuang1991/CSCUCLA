@@ -12,6 +12,19 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 
+
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing('analysis')
+options.inputFiles = 'csc_forsync.root'
+options.outputFile = 'evttree.root'
+options.parseArguments()
+
+import re
+m = re.match("(.*).root", options.inputFiles[0])
+options.outputFile = m.group(1) + options.outputFile
+options.inputFiles[0] = "file://" + options.inputFiles[0] 
+
+
 process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v8'
 # process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v12'
 
@@ -20,8 +33,7 @@ process.options = cms.untracked.PSet( SkipEvent =
 cms.untracked.vstring('ProductNotFound') )
 
 process.source = cms.Source ("PoolSource",
-        fileNames = cms.untracked.vstring(
-            'file://csc_straight_mask.root')        
+        fileNames = cms.untracked.vstring(options.inputFiles )        
 
 )
 process.MessageLogger = cms.Service("MessageLogger",
@@ -42,7 +54,7 @@ process.idealForDigiCSCGeometry.useGangedStripsInME1a = False
 
 
 process.MakeNtuple = cms.EDAnalyzer("MakeSimpleCSCTree",
-        NtupleFileName       = cms.untracked.string('CSCDigiTree.root'),
+        NtupleFileName       = cms.untracked.string(options.outputFile),
         wireDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCWireDigi"),
         stripDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCStripDigi"),
         alctDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCALCTDigi"),
