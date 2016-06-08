@@ -71,6 +71,7 @@ class CSCPatterns : public edm::EDAnalyzer {
         edm::EDGetTokenT<CSCCLCTDigiCollection> cd_token;
         edm::EDGetTokenT<CSCCorrelatedLCTDigiCollection> ld_token;
         edm::EDGetTokenT<CSCComparatorDigiCollection> cod_token;
+        edm::EDGetTokenT<reco::BeamSpot> obs_token;
 
         const CSCGeometry *theCSC;
         MuonServiceProxy *theService;

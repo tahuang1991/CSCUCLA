@@ -53,6 +53,7 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     cd_token = consumes<CSCCLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("clctDigiTag") );
     ld_token = consumes<CSCCorrelatedLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("lctDigiTag") );
     cod_token = consumes<CSCComparatorDigiCollection>( iConfig.getParameter<edm::InputTag>("compDigiTag") );
+    obs_token = consumes<reco::BeamSpot>( iConfig.getParameter<edm::InputTag>("offlineBeamSpotTag") );
 
     minPt     = iConfig.getParameter<double>("minPt");
 
@@ -205,8 +206,8 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<CSCComparatorDigiCollection> compDigi;
     iEvent.getByToken(cod_token, compDigi);
 
-    Handle<reco::BeamSpot> beamSpotHandle;
-    iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
+    edm::Handle<reco::BeamSpot> beamSpotHandle;
+    iEvent.getByToken(obs_token, beamSpotHandle);
 
     //Loop over muons applying the selection used for the timing analysis
     for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
