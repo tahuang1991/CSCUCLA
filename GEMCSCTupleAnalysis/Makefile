@@ -1,8 +1,8 @@
 LIBDIR        = lib
-SRCDIR        = src
+SRCDIR        = source
 INTDIR        = include
 CINTDIR       = cint
-UNPACKDIR     = ../gem-light-dqm/gemtreewriter/lib/
+UNPACKDIR     = $(shell pwd)/../gem-light-dqm/gemtreewriter/lib/
 
 include $(ROOTSYS)/etc/Makefile.arch
 
@@ -17,9 +17,9 @@ INTS = $(INTDIR)/BaseTupleAnalyzer.h $(INTDIR)/GEMGeoInfo.h $(INTDIR)/GEMInfo.h 
 
 libCSCTupleAnalysis.so: $(OBJS)
 ifeq ($(PLATFORM),macosx)
-	$(LD) $(SOFLAGS)$@ $(LDFLAGS) $(UNPACKDIR)libEvent.so $^ $(OutPutOpt) $@ $(EXPLLINKLIBS) -lTreePlayer
+	$(LD) $(SOFLAGS)$@ $(LDFLAGS) $(UNPACKDIR)libEvent.so $^ $(OutPutOpt) $@ $(EXPLLINKLIBS)
 else
-	$(LD) $(SOFLAGS) $(LDFLAGS) $(UNPACKDIR)libEvent.so $^ $(OutPutOpt) $@ $(EXPLLINKLIBS) -lTreePlayer
+	$(LD) $(SOFLAGS) $(LDFLAGS) $(UNPACKDIR)libEvent.so $^ $(OutPutOpt) $@ $(EXPLLINKLIBS) 
 endif
 
 # no need for a dictionary

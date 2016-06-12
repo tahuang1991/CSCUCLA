@@ -44,7 +44,7 @@ public:
     if(csc.segmentInfo.segment_pos_x->size() == 0) return;
     bool pure = true;
     if(csc.segmentInfo.segment_pos_x->size() != 1) pure=false;
-    if(csc.recHitInfo.rh_id->size() > csc.segmentInfo.segment_nHits->at(0) + 1 ) pure=false;
+    if(csc.recHitInfo.rh_id->size() > size(csc.segmentInfo.segment_nHits->at(0)) + 1 ) pure=false;
 
     //We need to look at every vFat....so let's get a map first
     std::vector<int> vFatIdx(GEMGeoInfo::NVFAT,-1);
@@ -237,7 +237,7 @@ public:
     if(csc.segmentInfo.segment_pos_x->size() == 0) return;
     bool pure = true;
     if(csc.segmentInfo.segment_pos_x->size() != 1) pure=false;
-    if(csc.recHitInfo.rh_id->size() > csc.segmentInfo.segment_nHits->at(0) + 1 ) pure=false;
+    if(csc.recHitInfo.rh_id->size() > size(csc.segmentInfo.segment_nHits->at(0)) + 1 ) pure=false;
 
     for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
       int idx=2;
@@ -254,7 +254,7 @@ public:
       if(vFat.idx  >= 16) idx = 0;
       plotter.get2D("VFATOcc")->Fill(idx,vFat.nRow);
 
-      for(unsigned int iS = 0; iS < vFat.nStrips(); ++iS){
+      for(int iS = 0; iS < vFat.nStrips(); ++iS){
         plotter.get2D("StripMap")->Fill(vFat.strips[iS] ,vFat.idx);
         plotter.get2D("StripMapPhysical")->Fill(GEMGeoInfo::getGlobalStripXLeftIs0(vFat.idx,vFat.strips[iS]),vFat.nRow);
       }
