@@ -1,5 +1,5 @@
 LIBDIR        = lib
-SRCDIR        = src
+SRCDIR        = source
 INTDIR        = include
 CINTDIR       = cint
 UNPACKDIR     = ../gem-light-dqm/gemtreewriter/lib/
