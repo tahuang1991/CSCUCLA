@@ -2,7 +2,7 @@ LIBDIR        = lib
 SRCDIR        = source
 INTDIR        = include
 CINTDIR       = cint
-UNPACKDIR     = ../gem-light-dqm/gemtreewriter/lib/
+UNPACKDIR     = $(shell pwd)/../gem-light-dqm/gemtreewriter/lib/
 
 include $(ROOTSYS)/etc/Makefile.arch
 
