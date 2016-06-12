@@ -54,7 +54,7 @@ public:
   int getStripNumber(int vFat, int channel);
 
   std::vector<std::map<int,int> > vFatStripMap;
-  std::vector<int> gebSlotMap;
+  std::vector<unsigned int> gebSlotMap;
 private:
   //Reads map of GEB channels to slot numbers
   void getGEBSlotMap(const GEMConfigInfo& gemConfig);
