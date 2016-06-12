@@ -1,23 +1,14 @@
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
-#include "include/BaseTupleAnalyzer.h"
-#include "include/CSCInfo.h"
+#include "../include/BaseCSCAndGEMAnalyzer.h"
 #include "include/HistGetter.h"
 
 using namespace std;
+using namespace CSCGEMTuples;
 
-class Analyzer : public BaseTupleAnalyzer{
+class Analyzer : public AnalyzeCSC{
 public:
-  Analyzer(TString fileName, TString treeName) : BaseTupleAnalyzer(fileName,treeName){
-    eventInfo.load(this);
-    recHitInfo.load(this);
-    stripInfo.load(this);
-    compInfo.load(this);
-    wireInfo.load(this);
-    lctInfo.load(this);
-    segmentInfo.load(this);
-    clctInfo.load(this);
-
+  Analyzer(std::string fileName, std::string treeName) : AnalyzeCSC(fileName,treeName){
     bookHistos();
   }
 
@@ -40,37 +31,19 @@ public:
 
   void bookHistos() {
     plotter.book2D("RecHitMap"    ,"RecHitMap    ;x[cm];y[cm]",60,-30,30,90,-90,90);
-
-
-
-
     plotter.book2D("StripMap","StripMap;strip # ;layer #",70,-0.5,69.5,10,-0.5,9.5);
-
-
     plotter.book2D("CompMap","CompMap;strip # ;layer #",85,-0.5,84.5,10,-0.5,9.5);
     plotter.book2D("WireMap","WireMap;wire group # ;layer #",50,-0.5,49.5,10,-0.5,9.5);
-
     plotter.book2D("LCTMap","LCTMap;half strip # ;wire group #",200,-0.5,199.5,200,-0.5,199.5);
     plotter.book1D("LCTPattern","LCTPattern;pattern #",12,-0.5,11.5);
-
     plotter.book2D("SegmentMap"    ,"SegmentMap    ;x[cm];y[cm]",60,-30,30,90,-90,90);
     plotter.book2D("ProjSegmentMap"    ,"SegmentMap    ;x[cm];y[cm]",60,-30,30,90,-90,90);
-
     plotter.book2D("SegmentMap_withinBox"    ,"SegmentMap_withinBox    ;x[cm];y[cm]",60,-30,30,90,-90,90);
     plotter.book2D("ProjSegmentMap_withinBox"    ,"ProjSegmentMap_withinBox    ;x[cm];y[cm]",60,-30,30,90,-90,90);
-
     plotter.book1D("SegmentsIn","SegmentsIn;SegmentsIn",2,-0.5,1.5);
     plotter.book1D("ProjSegmentsIn","ProjSegmentsIn;ProjSegmentsIn",2,-0.5,1.5);
-
     plotter.book1D("SegmentDxDz","SegmentDxDz;#theta",400,-20,20);
     plotter.book1D("SegmentDyDz","SegmentDyDz;#phi",400,-20,20);
-
-
-
-
-
-
-
   }
 
   virtual void runAEvent() {
@@ -116,26 +89,15 @@ public:
         plotter.get1D("SegmentDxDz")->Fill(segmentInfo.segment_dxdz->at(iH));
         plotter.get1D("SegmentDyDz")->Fill(segmentInfo.segment_dydz->at(iH));
       }
-
-
   }
 
   void write(TString fileName){ plotter.write(fileName);}
-
   HistGetter plotter;
-  EventInfo eventInfo;
-  RecHitInfo recHitInfo;
-  StripInfo  stripInfo;
-  CompInfo  compInfo;
-  WireInfo  wireInfo;
-  LCTInfo  lctInfo;
-  SegmentInfo  segmentInfo;
-  CLCTInfo  clctInfo;
 };
 
 #endif
 
-void AnalyzeTuples(std::string fileName,std::string treeName = "CSCDigiTree",std::string outFileName = "plots.root"){
+void AnalyzeCSCTuples(std::string fileName,std::string treeName = "CSCDigiTree",std::string outFileName = "plots.root"){
   Analyzer a(fileName,treeName);
   a.analyze();
   a.write(outFileName);

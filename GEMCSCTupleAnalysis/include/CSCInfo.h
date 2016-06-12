@@ -8,6 +8,7 @@
 #include <iostream>
 #include "BaseTupleAnalyzer.h"
 
+namespace CSCGEMTuples {
 
 typedef   unsigned char        size8 ; // 8 bit 0->255
 typedef   unsigned short int   size16; //16 bit 0->65536
@@ -305,6 +306,6 @@ public:
   }
 };
 
-
+}
 
 #endif

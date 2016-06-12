@@ -1,5 +1,11 @@
+#ifndef CSCUCLA_CSCDIGITUPLES_ANALYZETUPLES_IAGENT_H
+#define CSCUCLA_CSCDIGITUPLES_ANALYZETUPLES_IAGENT_H
+
 #include <vector>
 #include<algorithm>
+
+namespace CSCGEMTuples {
+
 typedef int Int;
 typedef std::vector<double> VecDoub;
 typedef std::vector<int> VecInt;
@@ -142,3 +148,7 @@ struct IQagent {
 		return std::max(qile[0],std::min(qile[nq-1],q));
 	}
 };
+
+}
+
+#endif

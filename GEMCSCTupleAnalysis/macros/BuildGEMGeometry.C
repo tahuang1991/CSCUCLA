@@ -1,20 +1,22 @@
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
-#include "include/BaseCSCAndGEMAnalyzer.h"
+#include "../include/BaseCSCAndGEMAnalyzer.h"
 #include "include/iqagent.h"
 
 #include<iostream>
+#include<fstream>
 #include<regex>
 
 using namespace std;
+using namespace CSCGEMTuples;
 
 class Analyze : public AnalyzeBoth {
 public:
-  Analyze(TString cscFileName, TString gemFileName) : AnalyzeBoth(cscFileName,gemFileName)
+  Analyze(std::string cscFileName, std::string gemFileName) : AnalyzeBoth(cscFileName,gemFileName)
   {
-    quantQueuesX.resize(GEMInfo::NVFAT);
-    quantQueuesY.resize(GEMInfo::NVFAT);
-    for(unsigned int iV = 0; iV < GEMInfo::NVFAT; ++iV){
+    quantQueuesX.resize(GEMGeoInfo::NVFAT);
+    quantQueuesY.resize(GEMGeoInfo::NVFAT);
+    for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
       quantQueuesX[iV].resize(nZSlices);
       quantQueuesY[iV].resize(nZSlices);
     }
@@ -30,7 +32,7 @@ public:
     outFile << "ZDIST "<< minZ <<endl;
     int iZ = 0;
     //Now output vFatInfo
-    for(unsigned int iV = 0; iV < GEMInfo::NVFAT; ++iV){
+    for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
       outFile << "VFAT "<< iV <<" "
                               << quantQueuesX[iV][iZ].report(.5) << " "
                               << quantQueuesX[iV][iZ].report(.1) << " "
@@ -50,10 +52,10 @@ public:
     //Now filter out any evens with too many exra rec hits
     if(csc.recHitInfo.rh_id->size() > csc.segmentInfo.segment_nHits->at(0) + 1 ) return;
     //Filter out gem events with more than one or 0 fired VFATs
-    if(gem.vFats.size() != 1 ) return;
+    if(gem.gemInfo.vFats.size() != 1 ) return;
 
       double interval = float(maxZ - minZ)/float(1);
-      int yV = gem.vFats[0].idx;
+      int yV = gem.gemInfo.vFats[0].idx;
       for(unsigned int iI = 0; iI < nZSlices; ++iI){
         double projZ = minZ + interval*iI;
         double projX,projY;
