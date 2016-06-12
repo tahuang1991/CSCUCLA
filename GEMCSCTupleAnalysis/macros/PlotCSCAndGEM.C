@@ -14,7 +14,7 @@ public:
   {
     plotClusterInfo.bookHistos(plotter);
     plotVFATInfo.bookHistos(plotter);
-    PlotEventInfo.bookHistos(plotter);
+    plotEventInfo.bookHistos(plotter);
   }
   virtual  ~Analyze() {};
 
@@ -23,12 +23,12 @@ public:
   virtual void runAEvent() {
     plotClusterInfo.fillHistos(this,plotter);
     plotVFATInfo.fillHistos(this,plotter);
-    PlotEventInfo.fillHistos(this,plotter);
+    plotEventInfo.fillHistos(this,plotter);
   }
 
   PlotClusterInfo plotClusterInfo;
   PlotVFATInfo    plotVFATInfo;
-  PlotEventInfo   PlotEventInfo;
+  PlotEventInfo   plotEventInfo;
   HistGetter plotter;
 };
 
