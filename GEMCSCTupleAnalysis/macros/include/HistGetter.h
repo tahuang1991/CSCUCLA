@@ -1,5 +1,5 @@
-#ifndef CSCUCLA_CSCDIGITUPLES_ANALYZETUPLES_HistGetter_H
-#define CSCUCLA_CSCDIGITUPLES_ANALYZETUPLES_HistGetter_H
+#ifndef CSCUCLA_GEMCSCTUPLEANALYSIS_HistGetter_H
+#define CSCUCLA_GEMCSCTUPLEANALYSIS_HistGetter_H
 
 #include <TFile.h>
 #include <TString.h>
@@ -7,7 +7,7 @@
 #include <TH2F.h>
 #include <assert.h>
 #include <iostream>
-
+namespace CSCGEMTuples {
 class HistGetter {
 public:
   void book1D(const char *name, const char *title, Int_t nbinsx, Double_t xlow, Double_t xup) {
@@ -114,7 +114,7 @@ public:
   std::map<std::string,unsigned int> hist2DsMap;
 };
 
-
+}
 
 
 #endif
