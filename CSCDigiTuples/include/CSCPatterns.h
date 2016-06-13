@@ -101,6 +101,7 @@ class CSCPatterns : public edm::EDAnalyzer {
         vector<int> rhLay;
         vector<float> rhPos;
         vector<float> rhE;
+        vector<float> rhMax;
 
         //LCT data
         vector<int> lctId;

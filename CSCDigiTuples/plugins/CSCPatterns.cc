@@ -102,6 +102,7 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     tree->Branch("rhLay",&rhLay);
     tree->Branch("rhPos",&rhPos);
     tree->Branch("rhE",&rhE);
+    tree->Branch("rhMax",&rhMax);
 
     tree->Branch("lctId",&lctId);
     tree->Branch("lctQ",&lctQ);
@@ -227,6 +228,7 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         rhLay.clear();
         rhPos.clear();
         rhE.clear();
+        rhMax.clear();
 
         lctId.clear();
         lctQ.clear();
@@ -310,13 +312,19 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 rhId.push_back(idBuf);
                 rhLay.push_back(hitID.layer());
                 cout << "Matching RecHit Found!" << endl;
-                
+
                 int centerID = hiti->nStrips()/2;
+                float rhMaxBuf = -999.0;
+                for(int tI = 0; tI < int(hiti->nTimeBins()); tI++)
+                {
+                    if(hiti->adcs(centerID,tI) > rhMaxBuf) rhMaxBuf = hiti->adcs(centerID,tI);
+                }
                 int centerStr = hiti->channels(centerID);
                 float rhPosBuf = float(centerStr) + hiti->positionWithinStrip();
                 float rhEBuf = hiti->energyDepositedInLayer();
                 rhPos.push_back(rhPosBuf);
                 rhE.push_back(rhEBuf);
+                rhMax.push_back(rhMaxBuf);
             }
 
             // Check to see if chamber has already been extracted
