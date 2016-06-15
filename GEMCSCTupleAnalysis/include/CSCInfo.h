@@ -40,6 +40,7 @@ public:
   std::vector<size8> * rh_strip_3 ;
   std::vector<float> * rh_pos_strip   ;
   std::vector<size8> * rh_n_wiregroups;
+  std::vector<size8> * rh_wireGrp     ;
 
   RecHitInfo() {
     rh_id           = new std::vector<size16>  ;
@@ -51,6 +52,7 @@ public:
     rh_strip_3      = new std::vector<size8>    ;
     rh_pos_strip    = new std::vector<float>               ;
     rh_n_wiregroups = new std::vector<size8>    ;
+    rh_wireGrp      = new std::vector<size8>    ;
   }
 
   void load(BaseTupleAnalyzer * analyzer) {
@@ -63,6 +65,7 @@ public:
     analyzer->setBranchAddress("rh_strip_3" ,&rh_strip_3 );
     analyzer->setBranchAddress("rh_pos_strip"   ,&rh_pos_strip   );
     analyzer->setBranchAddress("rh_n_wiregroups",&rh_n_wiregroups);
+    analyzer->setBranchAddress("rh_wireGrp"     ,&rh_wireGrp);
   }
 };
 
@@ -176,6 +179,16 @@ public:
   std::vector<float> *  segment_pos_y          ;
   std::vector<float> *  segment_dxdz      ;
   std::vector<float> *  segment_dydz        ;
+  std::vector<float> * segment_cov_dxdz       ;
+  std::vector<float> * segment_cov_dxdz_dydz  ;
+  std::vector<float> * segment_cov_dxdz_x     ;
+  std::vector<float> * segment_cov_dxdz_y     ;
+  std::vector<float> * segment_cov_dydz       ;
+  std::vector<float> * segment_cov_dydz_x     ;
+  std::vector<float> * segment_cov_dydz_y     ;
+  std::vector<float> * segment_cov_x          ;
+  std::vector<float> * segment_cov_x_y        ;
+  std::vector<float> * segment_cov_y          ;
   std::vector<float> *  segment_chisq          ;
   std::vector<size8> *  segment_nHits          ;
   std::vector<size16>*  segment_recHitIdx_1    ;
@@ -192,6 +205,16 @@ public:
     segment_pos_y       = new std::vector<float> ;
     segment_dxdz   = new std::vector<float> ;
     segment_dydz     = new std::vector<float> ;
+    segment_cov_dxdz      = new std::vector<float> ;
+    segment_cov_dxdz_dydz = new std::vector<float> ;
+    segment_cov_dxdz_x    = new std::vector<float> ;
+    segment_cov_dxdz_y    = new std::vector<float> ;
+    segment_cov_dydz      = new std::vector<float> ;
+    segment_cov_dydz_x    = new std::vector<float> ;
+    segment_cov_dydz_y    = new std::vector<float> ;
+    segment_cov_x         = new std::vector<float> ;
+    segment_cov_x_y       = new std::vector<float> ;
+    segment_cov_y         = new std::vector<float> ;
     segment_chisq       = new std::vector<float> ;
     segment_nHits       = new std::vector<size8> ;
     segment_recHitIdx_1 = new std::vector<size16>;
@@ -210,6 +233,16 @@ public:
     analyzer->setBranchAddress("segment_pos_y"       ,&segment_pos_y      );
     analyzer->setBranchAddress("segment_dxdz"   ,&segment_dxdz  );
     analyzer->setBranchAddress("segment_dydz"     ,&segment_dydz    );
+    analyzer->setBranchAddress("segment_cov_dxdz"     ,&segment_cov_dxdz       );
+    analyzer->setBranchAddress("segment_cov_dxdz_dydz",&segment_cov_dxdz_dydz  );
+    analyzer->setBranchAddress("segment_cov_dxdz_x"   ,&segment_cov_dxdz_x     );
+    analyzer->setBranchAddress("segment_cov_dxdz_y"   ,&segment_cov_dxdz_y     );
+    analyzer->setBranchAddress("segment_cov_dydz"     ,&segment_cov_dydz       );
+    analyzer->setBranchAddress("segment_cov_dydz_x"   ,&segment_cov_dydz_x     );
+    analyzer->setBranchAddress("segment_cov_dydz_y"   ,&segment_cov_dydz_y     );
+    analyzer->setBranchAddress("segment_cov_x"        ,&segment_cov_x          );
+    analyzer->setBranchAddress("segment_cov_x_y"      ,&segment_cov_x_y        );
+    analyzer->setBranchAddress("segment_cov_y"        ,&segment_cov_y          );
     analyzer->setBranchAddress("segment_chisq"       ,&segment_chisq      );
     analyzer->setBranchAddress("segment_nHits"       ,&segment_nHits      );
     analyzer->setBranchAddress("segment_recHitIdx_1" ,&segment_recHitIdx_1);
