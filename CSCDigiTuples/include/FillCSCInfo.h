@@ -106,6 +106,7 @@ public:
     book("rh_strip_3"     ,rh_strip_3 );
     book("rh_pos_strip"   ,rh_pos_strip   );
     book("rh_n_wiregroups",rh_n_wiregroups);
+    book("rh_wireGrp"     ,rh_wireGrp);
 
 
   }
@@ -121,6 +122,7 @@ private:
   std::vector<size8>    rh_strip_3  ;
   std::vector<float>    rh_pos_strip   ;
   std::vector<size8>    rh_n_wiregroups;
+  std::vector<size8>    rh_wireGrp;
 
 
   virtual void reset(){
@@ -133,6 +135,7 @@ private:
     rh_strip_3  .clear();
     rh_pos_strip   .clear();
     rh_n_wiregroups.clear();
+    rh_wireGrp.clear();
   }
 
   public:
@@ -297,6 +300,16 @@ public:
     book("segment_pos_y"       ,segment_pos_y      );
     book("segment_dxdz"        ,segment_dxdz  );
     book("segment_dydz"        ,segment_dydz    );
+    book("segment_cov_dxdz"     ,segment_cov_dxdz       );
+    book("segment_cov_dxdz_dydz",segment_cov_dxdz_dydz  );
+    book("segment_cov_dxdz_x"   ,segment_cov_dxdz_x     );
+    book("segment_cov_dxdz_y"   ,segment_cov_dxdz_y     );
+    book("segment_cov_dydz"     ,segment_cov_dydz       );
+    book("segment_cov_dydz_x"   ,segment_cov_dydz_x     );
+    book("segment_cov_dydz_y"   ,segment_cov_dydz_y     );
+    book("segment_cov_x"        ,segment_cov_x          );
+    book("segment_cov_x_y"      ,segment_cov_x_y        );
+    book("segment_cov_y"        ,segment_cov_y          );
     book("segment_chisq"       ,segment_chisq      );
     book("segment_nHits"       ,segment_nHits      );
     book("segment_recHitIdx_1" ,segment_recHitIdx_1);
@@ -315,8 +328,18 @@ private:
      std::vector<size16>  segment_id             ;
      std::vector<float>   segment_pos_x          ;
      std::vector<float>   segment_pos_y          ;
-     std::vector<float>   segment_dxdz      ;
-     std::vector<float>   segment_dydz        ;
+     std::vector<float>   segment_dxdz           ;
+     std::vector<float>   segment_dydz           ;
+     std::vector<float>   segment_cov_dxdz       ;
+     std::vector<float>   segment_cov_dxdz_dydz  ;
+     std::vector<float>   segment_cov_dxdz_x     ;
+     std::vector<float>   segment_cov_dxdz_y     ;
+     std::vector<float>   segment_cov_dydz       ;
+     std::vector<float>   segment_cov_dydz_x     ;
+     std::vector<float>   segment_cov_dydz_y     ;
+     std::vector<float>   segment_cov_x          ;
+     std::vector<float>   segment_cov_x_y        ;
+     std::vector<float>   segment_cov_y          ;
      std::vector<float>   segment_chisq          ;
      std::vector<size8>   segment_nHits          ;
      std::vector<size16>  segment_recHitIdx_1    ;
@@ -333,6 +356,16 @@ private:
     segment_pos_y       .clear();
     segment_dxdz        .clear();
     segment_dydz        .clear();
+    segment_cov_dxdz       .clear();
+    segment_cov_dxdz_dydz  .clear();
+    segment_cov_dxdz_x     .clear();
+    segment_cov_dxdz_y     .clear();
+    segment_cov_dydz       .clear();
+    segment_cov_dydz_x     .clear();
+    segment_cov_dydz_y     .clear();
+    segment_cov_x          .clear();
+    segment_cov_x_y        .clear();
+    segment_cov_y          .clear();
     segment_chisq       .clear();
     segment_nHits       .clear();
     segment_recHitIdx_1 .clear();
