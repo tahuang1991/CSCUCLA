@@ -15,6 +15,7 @@ public:
   AnalyzeCSC(std::string fileName, std::string treeName);
   virtual void analyze(int reportFrequency = 1000000);
   virtual void runAEvent() {}
+  void projSement(int segIDX, double projZ, double& projx, double& projy,double& projxe, double& projye) const;
 
   EventInfo eventInfo;
   RecHitInfo recHitInfo;
@@ -46,8 +47,6 @@ public:
 
   virtual void runAEvent() {};
   void analyze(int reportFrequency = 1000000);
-
-  void projSement(SegmentInfo * segInfo, int segIDX, double projZ, double& projx, double& projy);
 
   AnalyzeCSC csc;
   AnalyzeGEM gem;
