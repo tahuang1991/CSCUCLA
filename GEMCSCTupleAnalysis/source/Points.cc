@@ -54,17 +54,9 @@ Error2D& Error2D::operator+=(const Error2D &rhs) {
  yy() += rhs.yy();
  return *this;
 }
-Error2D& Error2D::operator-=(const Error2D &rhs) {
-  xx() -= rhs.xx();
-  xy() -= rhs.xy();
-  yy() -= rhs.yy();
-  return *this;
-}
+
 Error2D Error2D::operator+(const Error2D &other) const {
   return Error2D(*this) += other;
-}
-Error2D Error2D::operator-(const Error2D &other) const {
-  return Error2D(*this) -= other;
 }
 
 Error2D Error2D::scale(float s) const {

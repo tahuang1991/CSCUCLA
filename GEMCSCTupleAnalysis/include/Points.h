@@ -44,9 +44,10 @@ public:
 
   void set(float newXX, float newXY, float newYY);
   Error2D & operator+=(const Error2D &rhs);
-  Error2D & operator-=(const Error2D &rhs);
+  //For when adding points...equivalent to a +=
+  Error2D & operator-=(const Error2D &rhs) {return (*this) += rhs;}
   Error2D operator+(const Error2D &other) const;
-  Error2D operator-(const Error2D &other) const;
+  Error2D operator-(const Error2D &other) const {return (*this) - other;}
 
   Error2D scale(float s) const;
 
@@ -83,14 +84,15 @@ public:
   float  error_x() const;
   float  error_y() const;
 
-  Point2D point() const {return _point;}
-  Error2D error() const {return _error;}
+  const Point2D& point() const {return _point;}
+  const Error2D& error() const {return _error;}
   Point2D& point() {return _point;}
   Error2D& error() {return _error;}
 
   void set(float newX, float newY, float newXX, float newXY, float newYY);
   void set(const Point2D& newPoint, const Error2D& newError);
   ErrorPoint2D& operator+=(const ErrorPoint2D &rhs);
+
   ErrorPoint2D& operator-=(const ErrorPoint2D &rhs);
   ErrorPoint2D  operator+(const ErrorPoint2D &other) const;
   ErrorPoint2D  operator-(const ErrorPoint2D &other) const;

@@ -29,7 +29,7 @@ ErrorPoint2D Segment::project(float projX, float projY, float projZ, float projP
   //now move it
   ErrorPoint2D point(x+projX,y+projY,xx,xy,yy);
   //and rotate it
-  point.rotate(projPhi);
+  if(projPhi) point = point.rotate(projPhi);
   return point;
 }
 };
