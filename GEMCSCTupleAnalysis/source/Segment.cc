@@ -19,14 +19,10 @@ _cov[DXDY] = dxdzdydz;
 _cov[DYDY] = dydzdydz;
 }
 
-ErrorPoint2D Segment::project(double projX, double projY, double projZ, double projPhi, double projPhi2) const {
+ErrorPoint2D Segment::project(double projX, double projY, double projZ, double projPhi) const {
   //First we project it to the correct Z
   double x = _coords[X] + projZ*_coords[DX];
   double y = _coords[Y] + projZ*_coords[DY];
-
-  x +=(x*projPhi2)*_coords[DX];
-  y +=(x*projPhi2)*_coords[DY];
-
   double xx = _cov[XX] +projZ*projZ*_cov[DXDX] +2*projZ*_cov[XDX];
   double xy = _cov[XY] +projZ*projZ*_cov[DXDY] +projZ*(_cov[XDY] + _cov[YDX]);
   double yy = _cov[YY] +projZ*projZ*_cov[DYDY] +2*projZ*_cov[YDY];
