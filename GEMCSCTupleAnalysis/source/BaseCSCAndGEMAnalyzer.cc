@@ -55,6 +55,10 @@ void AnalyzeCSC::projSement(int segIDX, double projZ, double& projx, double& pro
 void AnalyzeBoth::analyze(int reportFrequency) {
   gem.eventNumber +=1;
   while(csc.nextEvent(reportFrequency) && gem.nextEvent(reportFrequency)){
+    if(csc.eventInfo.Event_EventNumber != gem.event->GetEventNumber()){
+      gem.eventNumber +=1;
+      continue;
+    }
     csc.runAEvent();
     gem.runAEvent();
     runAEvent();

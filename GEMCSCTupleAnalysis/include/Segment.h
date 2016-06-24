@@ -6,14 +6,14 @@ class Segment {
 public:
   enum Coord {X,Y,DX,DY};
   enum Cov   {XX,XY,XDX,XDY,YY,YDX,YDY,DXDX,DXDY,DYDY};
-  Segment() : _coords(new float[4]), _cov(new float[10]) {};
+  Segment() : _coords(new double[4]), _cov(new double[10]) {};
   ~Segment() {delete[] _coords; delete[] _cov;}
-  void setCoords(float x, float y, float dxdz, float dydz);
-  void setCov(float xx, float xy, float xdxdz, float xdydz, float yy, float ydxdz, float ydydz, float dxdzdxdz, float dxdzdydz, float dydzdydz);
-  ErrorPoint2D project(float projX, float projY, float projZ, float projPhi) const;
+  void setCoords(double x, double y, double dxdz, double dydz);
+  void setCov(double xx, double xy, double xdxdz, double xdydz, double yy, double ydxdz, double ydydz, double dxdzdxdz, double dxdzdydz, double dydzdydz);
+  ErrorPoint2D project(double projX, double projY, double projZ, double projPhi, double projPhi2=0) const;
 private:
-  float * _coords;
-  float * _cov;
+  double * _coords;
+  double * _cov;
 };
 
 
