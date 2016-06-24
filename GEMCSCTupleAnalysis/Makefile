@@ -6,14 +6,15 @@ UNPACKDIR     = $(shell pwd)/../gem-light-dqm/gemtreewriter/lib/
 
 include $(ROOTSYS)/etc/Makefile.arch
 
-CXXFLAGS += -I../.. -I.
+CXXFLAGS += -I../.. -I. 
 
 ifeq ($(PLATFORM),macosx)
 CXXFLAGS += -std=c++11
 endif
 
-OBJS = $(LIBDIR)/BaseTupleAnalyzer.o $(LIBDIR)/GEMGeoInfo.o $(LIBDIR)/GEMInfo.o $(LIBDIR)/BaseTupleAnalyzer.o  $(LIBDIR)/BaseCSCAndGEMAnalyzer.o
-INTS = $(INTDIR)/BaseTupleAnalyzer.h $(INTDIR)/GEMGeoInfo.h $(INTDIR)/GEMInfo.h   $(LIBDIR)/BaseTupleAnalyzer.h   $(LIBDIR)/BaseCSCAndGEMAnalyzer.h
+OBJS = $(LIBDIR)/BaseTupleAnalyzer.o $(LIBDIR)/GEMGeoInfo.o $(LIBDIR)/GEMInfo.o $(LIBDIR)/BaseTupleAnalyzer.o  $(LIBDIR)/BaseCSCAndGEMAnalyzer.o \
+	$(LIBDIR)/GEMPartitionGeometry.o $(LIBDIR)/Points.o $(LIBDIR)/GEMGeometry.o $(LIBDIR)/GEMGeoPlotting.o $(LIBDIR)/Segment.o CSCTupleAnalysisDict.o
+INTS = $(INTDIR)/GEMGeoPlotting.h 
 
 libCSCTupleAnalysis.so: $(OBJS)
 ifeq ($(PLATFORM),macosx)
@@ -23,16 +24,16 @@ else
 endif
 
 # no need for a dictionary
-#CSCTupleAnalysisDict.cc: $(INTS) $(SRCDIR)/CSCTupleAnalysis_LinkDef.h
-#	@echo "Generating dictionary $@..."
-#	rootcling  -v -l -f $@ -c -I../.. $^ 
-#$(LIBDIR)/CSCTupleAnalysisDict.o: CSCTupleAnalysisDict.cc
-#	$(CXX)  $(CXXFLAGS) -c $<  -o $@	
+CSCTupleAnalysisDict.cc: $(INTS) $(SRCDIR)/CSCTupleAnalysis_LinkDef.h
+	@echo "Generating dictionary $@..."
+	rootcling  -v -l -f $@ -c -I../ $^ 
+$(LIBDIR)/CSCTupleAnalysisDict.o: CSCTupleAnalysisDict.cc
+	$(CXX)  $(CXXFLAGS) -c $<  -o $@	
 
 $(LIBDIR)/%.o: $(SRCDIR)/%.cc
 	$(CXX) $(CXXFLAGS) -c $<  -o $@
 
-all:  libHistoPlotting.so
+all:  libCSCTupleAnalysis.so
 	
 # =============================== 
 clean: 
