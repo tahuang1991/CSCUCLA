@@ -2,6 +2,7 @@
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "../include/BaseCSCAndGEMAnalyzer.h"
 #include "include/iqagent.h"
+#include "include/GEMPlottingInfo.h"
 
 #include<iostream>
 #include<fstream>
@@ -30,7 +31,7 @@ public:
 
     //First output the ZDist
     outFile << "ZDIST "<< minZ <<endl;
-    int iZ = 0;
+    int iZ = 103;
     //Now output vFatInfo
     for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
       outFile << "VFAT "<< iV <<" "
@@ -43,23 +44,33 @@ public:
                               <<endl;
     }
     outFile.close();
+
+    for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
+      TString name = TString::Format("vF_%u_projY_50",iV);
+      TString name2 = TString::Format("vF_%u_projY_80",iV);
+      plotter.book1D(name,";Z projection [cm];size of center 50% of data [cm]",nZSlices,minZ,maxZ);
+      plotter.book1D(name2,";Z projection [cm];size of center 80% of data [cm]",nZSlices,minZ,maxZ);
+      for(unsigned int iZ = 0; iZ < nZSlices; ++iZ){
+        plotter.get1D(name)->SetBinContent(iZ+1,  quantQueuesY[iV][iZ].report(.75) - quantQueuesY[iV][iZ].report(.25)   );
+        plotter.get1D(name2)->SetBinContent(iZ+1, quantQueuesY[iV][iZ].report(.9)  - quantQueuesY[iV][iZ].report(.1)   );
+      }
+    }
+    plotter.write(outFileName.ReplaceAll(".txt",".root"));
   }
 
   virtual void runAEvent() {
 
     //First filter out any events with more than one segment
-    if(csc.segmentInfo.segment_pos_x->size() != 1) return;
-    //Now filter out any evens with too many exra rec hits
-    if(csc.recHitInfo.rh_id->size() > csc.segmentInfo.segment_nHits->at(0) + 1 ) return;
-    //Filter out gem events with more than one or 0 fired VFATs
-    if(gem.gemInfo.vFats.size() != 1 ) return;
+    if(!pureSample(csc)) return;
+    //And with more than one cluster
+    if(gem.gemInfo.clusters.size() != 1) return;
 
-      double interval = float(maxZ - minZ)/float(1);
+      double interval = float(maxZ - minZ)/float(nZSlices);
       int yV = gem.gemInfo.vFats[0].idx;
       for(unsigned int iI = 0; iI < nZSlices; ++iI){
         double projZ = minZ + interval*iI;
-        double projX,projY;
-        projSement(&csc.segmentInfo,0,projZ,projX,projY);
+        double projX,projY,projXE,projYE;
+        csc.projSement(0,projZ,projX,projY,projXE,projYE);
         quantQueuesX[yV][iI].add(projX);
         quantQueuesY[yV][iI].add(projY);
         if(yV < 8){
@@ -81,13 +92,14 @@ public:
       }
   }
 
-  int nZSlices = 1;
+  int nZSlices = 150;
 //  int minZ = 53;
 //  int maxZ= 54;
-  int minZ = 53;
-  int maxZ= 54;
+  double minZ = -50;
+  double maxZ= 100;
   std::vector<std::vector<IQagent> > quantQueuesX; //[VF][z]
   std::vector<std::vector<IQagent> > quantQueuesY; //[VF][z]
+  HistGetter plotter;
 
 };
 

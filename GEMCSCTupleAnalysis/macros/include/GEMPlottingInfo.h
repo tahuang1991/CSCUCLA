@@ -4,6 +4,7 @@
 #include <TFile.h>
 #include <TString.h>
 #include <TTree.h>
+#include <TMath.h>
 #include <assert.h>
 #include <iostream>
 
@@ -11,6 +12,21 @@
 #include "HistGetter.h"
 
 namespace CSCGEMTuples {
+
+bool pureSample(AnalyzeCSC&  csc){
+  if(csc.segmentInfo.segment_id->size() != 1) return false;
+  if(csc.segmentInfo.segment_nHits->at(0) != 6) return false;
+  if(csc.recHitInfo.rh_id->size() - csc.segmentInfo.segment_nHits->at(0) > 1) return false;
+  if(TMath::Prob(csc.segmentInfo.segment_chisq->at(0),csc.segmentInfo.segment_nHits->at(0)*6-4) < 0.01) return false;
+  if(csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_1->at(0)) == 1 || csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_1->at(0)) == 48) return false;
+  if(csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_2->at(0)) == 1 || csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_2->at(0)) == 48) return false;
+  if(csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_3->at(0)) == 1 || csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_3->at(0)) == 48) return false;
+  if(csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_4->at(0)) == 1 || csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_4->at(0)) == 48) return false;
+  if(csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_5->at(0)) == 1 || csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_5->at(0)) == 48) return false;
+  if(csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_6->at(0)) == 1 || csc.recHitInfo.rh_wireGrp->at(csc.segmentInfo.segment_recHitIdx_6->at(0)) == 48) return false;
+  return true;
+}
+
 class PlotClusterInfo {
 public:
   void bookHistos(HistGetter& plotter){
@@ -42,9 +58,7 @@ public:
     AnalyzeGEM&  gem = ana->gem;
 
     if(csc.segmentInfo.segment_pos_x->size() == 0) return;
-    bool pure = true;
-    if(csc.segmentInfo.segment_pos_x->size() != 1) pure=false;
-    if(csc.recHitInfo.rh_id->size() > size(csc.segmentInfo.segment_nHits->at(0)) + 1 ) pure=false;
+    bool pure = pureSample(csc);
 
     //We need to look at every vFat....so let's get a map first
     std::vector<int> vFatIdx(GEMGeoInfo::NVFAT,-1);
@@ -235,9 +249,7 @@ public:
     AnalyzeGEM&  gem = ana->gem;
 
     if(csc.segmentInfo.segment_pos_x->size() == 0) return;
-    bool pure = true;
-    if(csc.segmentInfo.segment_pos_x->size() != 1) pure=false;
-    if(csc.recHitInfo.rh_id->size() > size(csc.segmentInfo.segment_nHits->at(0)) + 1 ) pure=false;
+    bool pure = pureSample(csc);
 
     for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
       int idx=2;
@@ -261,12 +273,12 @@ public:
     }
 
     if(pure){
+
       int iS = 0;
       double sX = csc.segmentInfo.segment_pos_x->at(iS);
       double sY = csc.segmentInfo.segment_pos_y->at(iS);
-
-      double spX = sX +gem.gemGeo.ZDIST*csc.segmentInfo.segment_dxdz->at(iS);
-      double spY = sY +gem.gemGeo.ZDIST*csc.segmentInfo.segment_dydz->at(iS);
+      double spX,spY,projxe,projye;
+      csc.projSement(iS,gem.gemGeo.ZDIST,spX,spY,projxe,projye);
       plotter.get2D("SegmentMap")->Fill(sX,sY);
       plotter.get2D("ProjSegmentMap")->Fill(spX,spY);
       if(gem.gemInfo.vFats.size()){

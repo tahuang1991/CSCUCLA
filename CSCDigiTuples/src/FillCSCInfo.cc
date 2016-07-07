@@ -25,6 +25,7 @@ void FillRecHitInfo::fill(const CSCRecHit2DCollection& recHits){
       rh_strip_3 .push_back(CSCHelper::convertTo<size8>(hiti->channels(2),"rh_strip_3"));
       rh_pos_strip   .push_back(hiti->positionWithinStrip());
       rh_n_wiregroups.push_back(CSCHelper::convertTo<size8>(hiti->nWireGroups(),"rh_n_wiregroups"));
+      rh_wireGrp.push_back(CSCHelper::convertTo<size8>(hiti->hitWire(),"rh_wireGrp"));
   }
 }
 
@@ -138,6 +139,7 @@ void FillSegmentInfo::fill(const CSCSegmentCollection& segments, const CSCRecHit
     float segX     = localPos.x();
     float segY     = localPos.y();
     LocalVector segDir = (*dSiter).localDirection();
+    AlgebraicSymMatrix covMatrix = (*dSiter).parametersError();
     const auto& segmentHits = dSiter->specificRecHits();
 
     segment_id   .push_back(CSCHelper::chamberSerial(id));
@@ -145,6 +147,16 @@ void FillSegmentInfo::fill(const CSCSegmentCollection& segments, const CSCRecHit
     segment_pos_y.push_back(segY);
     segment_dxdz.push_back(segDir.x()/segDir.z());
     segment_dydz.push_back(segDir.y()/segDir.z());
+    segment_cov_dxdz       .push_back(float(covMatrix[0][0]));
+    segment_cov_dxdz_dydz  .push_back(float(covMatrix[0][1]));
+    segment_cov_dxdz_x     .push_back(float(covMatrix[0][2]));
+    segment_cov_dxdz_y     .push_back(float(covMatrix[0][3]));
+    segment_cov_dydz       .push_back(float(covMatrix[1][1]));
+    segment_cov_dydz_x     .push_back(float(covMatrix[1][2]));
+    segment_cov_dydz_y     .push_back(float(covMatrix[1][3]));
+    segment_cov_x          .push_back(float(covMatrix[2][2]));
+    segment_cov_x_y        .push_back(float(covMatrix[2][3]));
+    segment_cov_y          .push_back(float(covMatrix[3][3]));
     segment_chisq.push_back((*dSiter).chi2());
     segment_nHits.push_back(CSCHelper::convertTo<size8>(segmentHits.size()  ,"segment_nHits"));
     segment_recHitIdx_1 .push_back((recHits && segmentHits.size() > 0) ?findRecHitIdx(segmentHits[0],recHits) : 0);
