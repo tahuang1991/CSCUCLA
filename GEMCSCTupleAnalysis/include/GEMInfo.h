@@ -36,6 +36,7 @@ public:
   std::vector<VFAT> vFats;
   std::vector<GEMCluster> clusters;
   int BX = -1;
+  int evtN = -1;
   GEMChannelMapping channelMapping;
 private:
   void getClusters();

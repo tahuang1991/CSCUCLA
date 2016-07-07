@@ -189,147 +189,155 @@ public:
   }
 
   void getClustersByVFAT(const std::vector<GEMCluster>& clusters ,std::vector<int>& nClus, std::vector<std::vector<int> >& clusSize){
-    for(unsigned int iC = 0; iC < clusters.size(); ++iC){
-      bool fill_col1 = false; //left to right
-      bool fill_col2 = false;
-      bool fill_col3 = false;
+      for(unsigned int iC = 0; iC < clusters.size(); ++iC){
+          bool fill_col1 = false; //left to right
+          bool fill_col2 = false;
+          bool fill_col3 = false;
 
-      if(clusters[iC].getFirstStrip() >= 256  ){
-        fill_col1 = true;
-        if(clusters[iC].getLastStrip() <= 255 ) fill_col2 = true;
-        if(clusters[iC].getLastStrip() <= 127 ) fill_col3 = true;
-      } else if (clusters[iC].getFirstStrip() >= 128  ) {
-        fill_col2 = true;
-        if(clusters[iC].getLastStrip() <= 127 ) fill_col3 = true;
-      } else{
-        fill_col3 = true;
+          if(clusters[iC].getFirstStrip() >= 256  ){
+              fill_col1 = true;
+              if(clusters[iC].getLastStrip() <= 255 ) fill_col2 = true;
+              if(clusters[iC].getLastStrip() <= 127 ) fill_col3 = true;
+          } else if (clusters[iC].getFirstStrip() >= 128  ) {
+              fill_col2 = true;
+              if(clusters[iC].getLastStrip() <= 127 ) fill_col3 = true;
+          } else{
+              fill_col3 = true;
+          }
+
+          std::vector<int> fillVFAT;
+          if(fill_col1) fillVFAT.push_back(clusters[iC].nRow +16);
+          if(fill_col2) fillVFAT.push_back(clusters[iC].nRow + 8);
+          if(fill_col3) fillVFAT.push_back(clusters[iC].nRow);
+
+          for(unsigned int iV = 0; iV < fillVFAT.size(); ++iV){
+              nClus[fillVFAT[iV]]++;
+              clusSize[fillVFAT[iV]].push_back(clusters[iC].getNStrips());
+          }
+
       }
-
-      std::vector<int> fillVFAT;
-      if(fill_col1) fillVFAT.push_back(clusters[iC].nRow +16);
-      if(fill_col2) fillVFAT.push_back(clusters[iC].nRow + 8);
-      if(fill_col3) fillVFAT.push_back(clusters[iC].nRow);
-
-      for(unsigned int iV = 0; iV < fillVFAT.size(); ++iV){
-        nClus[fillVFAT[iV]]++;
-        clusSize[fillVFAT[iV]].push_back(clusters[iC].getNStrips());
-      }
-
-    }
   }
 
 };
 
 
 class PlotVFATInfo {
-public:
-  void bookHistos(HistGetter& plotter){
+    public:
+        void bookHistos(HistGetter& plotter){
 
-    plotter.book2D("SegmentMap_NOGEMHIT"      ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
-    plotter.book2D("SegmentMap_GEMHIT"        ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
-    plotter.book2D("SegmentMap"                ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
-    plotter.book2D("ProjSegmentMap_NOGEMHIT"  ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
-    plotter.book2D("ProjSegmentMap_GEMHIT"    ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
-    plotter.book2D("ProjSegmentMap"            ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
-    plotter.book2D("VFATOcc"                   ,";VFAT #"          ,GEMGeoInfo::NCOLS, -0.5, GEMGeoInfo::NCOLS -.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
-    plotter.book2D("VFATOcc_all"                   ,";VFAT #"          ,GEMGeoInfo::NCOLS, -0.5, GEMGeoInfo::NCOLS -.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
+            plotter.book2D("SegmentMap_NOGEMHIT"      ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
+            plotter.book2D("SegmentMap_GEMHIT"        ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
+            plotter.book2D("SegmentMap"                ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
+            plotter.book2D("ProjSegmentMap_NOGEMHIT"  ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
+            plotter.book2D("ProjSegmentMap_GEMHIT"    ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
+            plotter.book2D("ProjSegmentMap"            ,";x[cm];y[cm]"     ,60,-30,30,90,-90,90);
+            plotter.book2D("VFATOcc"                   ,";VFAT #"          ,GEMGeoInfo::NCOLS, -0.5, GEMGeoInfo::NCOLS -.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
+            plotter.book2D("VFATOcc_all"                   ,";VFAT #"          ,GEMGeoInfo::NCOLS, -0.5, GEMGeoInfo::NCOLS -.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
 
-    plotter.book2D("StripMap"    ,";Strip #;VFAT #",130,-0.5,129.5,GEMGeoInfo::NVFAT,-0.5,GEMGeoInfo::NVFAT - 0.5 );
-    plotter.book2D("StripMapPhysical"    ,"",384,-0.5,383.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
+            plotter.book2D("StripMap"    ,";Strip #;VFAT #",130,-0.5,129.5,GEMGeoInfo::NVFAT,-0.5,GEMGeoInfo::NVFAT - 0.5 );
+            plotter.book2D("StripMapPhysical"    ,"",384,-0.5,383.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
 
-    for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
-      plotter.book2D(TString::Format("SegmentMap_%u",iV)        ,TString::Format("vFat %u;x[cm];y[cm]",iV)     ,60,-30,30,90,-90,90);
-      plotter.book2D(TString::Format("ProjSegmentMap_%u",iV)    ,TString::Format("Proj vFat %u;x[cm];y[cm]",iV),60,-30,30,90,-90,90);
-    }
-   }
-
-  template<class Analyzer>
-  void fillHistos(Analyzer * ana, HistGetter& plotter){
-    AnalyzeCSC&  csc = ana->csc;
-    AnalyzeGEM&  gem = ana->gem;
-
-    if(csc.segmentInfo.segment_pos_x->size() == 0) return;
-    bool pure = pureSample(csc);
-
-    for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
-      int idx=2;
-      if(iV >= 8) idx = 1;
-      if(iV  >= 16) idx = 0;
-      plotter.get2D("VFATOcc_all")->Fill(idx,GEMGeoInfo::getRow(iV));
-
-    }
-
-    for(unsigned int iV = 0; iV < gem.gemInfo.vFats.size(); ++iV){
-      auto& vFat = gem.gemInfo.vFats[iV];
-      int idx=2;
-      if(vFat.idx >= 8) idx = 1;
-      if(vFat.idx  >= 16) idx = 0;
-      plotter.get2D("VFATOcc")->Fill(idx,vFat.nRow);
-
-      for(int iS = 0; iS < vFat.nStrips(); ++iS){
-        plotter.get2D("StripMap")->Fill(vFat.strips[iS] ,vFat.idx);
-        plotter.get2D("StripMapPhysical")->Fill(GEMGeoInfo::getGlobalStripXLeftIs0(vFat.idx,vFat.strips[iS]),vFat.nRow);
-      }
-    }
-
-    if(pure){
-
-      int iS = 0;
-      double sX = csc.segmentInfo.segment_pos_x->at(iS);
-      double sY = csc.segmentInfo.segment_pos_y->at(iS);
-      double spX,spY,projxe,projye;
-      csc.projSement(iS,gem.gemGeo.ZDIST,spX,spY,projxe,projye);
-      plotter.get2D("SegmentMap")->Fill(sX,sY);
-      plotter.get2D("ProjSegmentMap")->Fill(spX,spY);
-      if(gem.gemInfo.vFats.size()){
-        plotter.get2D("SegmentMap_GEMHIT")->Fill(sX,sY);
-        plotter.get2D("ProjSegmentMap_GEMHIT")->Fill(spX,spY);
-      } else {
-        plotter.get2D("SegmentMap_NOGEMHIT")->Fill(sX,sY);
-        plotter.get2D("ProjSegmentMap_NOGEMHIT")->Fill(spX,spY);
-      }
-
-      if(gem.gemInfo.vFats.size() == 1){
-        auto& vFat = gem.gemInfo.vFats[0];
-        TString name = TString::Format("SegmentMap_%u",vFat.idx);
-        TString name2 = TString::Format("ProjSegmentMap_%u",vFat.idx);
-
-        for(unsigned int iS = 0; iS < csc.segmentInfo.segment_pos_x->size(); ++iS){
-
-          plotter.get2D(name)->Fill(sX,sY);
-          plotter.get2D(name2)->Fill(spX,spY);
+            for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
+                plotter.book2D(TString::Format("SegmentMap_%u",iV)        ,TString::Format("vFat %u;x[cm];y[cm]",iV)     ,60,-30,30,90,-90,90);
+                plotter.book2D(TString::Format("ProjSegmentMap_%u",iV)    ,TString::Format("Proj vFat %u;x[cm];y[cm]",iV),60,-30,30,90,-90,90);
+            }
         }
-      }
 
-    }
+        template<class Analyzer>
+            void fillHistos(Analyzer * ana, HistGetter& plotter){
+                AnalyzeCSC&  csc = ana->csc;
+                AnalyzeGEM&  gem = ana->gem;
 
-  }
+                if(csc.segmentInfo.segment_pos_x->size() == 0) return;
+                bool pure = pureSample(csc);
+
+                for(unsigned int iV = 0; iV < GEMGeoInfo::NVFAT; ++iV){
+                    int idx=2;
+                    if(iV >= 8) idx = 1;
+                    if(iV  >= 16) idx = 0;
+                    plotter.get2D("VFATOcc_all")->Fill(idx,GEMGeoInfo::getRow(iV));
+
+                }
+
+                for(unsigned int iV = 0; iV < gem.gemInfo.vFats.size(); ++iV){
+                    auto& vFat = gem.gemInfo.vFats[iV];
+                    int idx=2;
+                    if(vFat.idx >= 8) idx = 1;
+                    if(vFat.idx  >= 16) idx = 0;
+                    plotter.get2D("VFATOcc")->Fill(idx,vFat.nRow);
+
+                    for(int iS = 0; iS < vFat.nStrips(); ++iS){
+                        plotter.get2D("StripMap")->Fill(vFat.strips[iS] ,vFat.idx);
+                        plotter.get2D("StripMapPhysical")->Fill(GEMGeoInfo::getGlobalStripXLeftIs0(vFat.idx,vFat.strips[iS]),vFat.nRow);
+                    }
+                }
+
+                if(pure){
+
+                    int iS = 0;
+                    double sX = csc.segmentInfo.segment_pos_x->at(iS);
+                    double sY = csc.segmentInfo.segment_pos_y->at(iS);
+                    double spX,spY,projxe,projye;
+                    csc.projSement(iS,gem.gemGeo.ZDIST,spX,spY,projxe,projye);
+                    plotter.get2D("SegmentMap")->Fill(sX,sY);
+                    plotter.get2D("ProjSegmentMap")->Fill(spX,spY);
+                    if(gem.gemInfo.vFats.size()){
+                        plotter.get2D("SegmentMap_GEMHIT")->Fill(sX,sY);
+                        plotter.get2D("ProjSegmentMap_GEMHIT")->Fill(spX,spY);
+                    } else {
+                        plotter.get2D("SegmentMap_NOGEMHIT")->Fill(sX,sY);
+                        plotter.get2D("ProjSegmentMap_NOGEMHIT")->Fill(spX,spY);
+                    }
+
+                    if(gem.gemInfo.vFats.size() == 1){
+                        auto& vFat = gem.gemInfo.vFats[0];
+                        TString name = TString::Format("SegmentMap_%u",vFat.idx);
+                        TString name2 = TString::Format("ProjSegmentMap_%u",vFat.idx);
+
+                        for(unsigned int iS = 0; iS < csc.segmentInfo.segment_pos_x->size(); ++iS){
+
+                            plotter.get2D(name)->Fill(sX,sY);
+                            plotter.get2D(name2)->Fill(spX,spY);
+                        }
+                    }
+
+                }
+
+            }
 };
 
 
 
 class PlotEventInfo {
-public:
-  void bookHistos(HistGetter& plotter){
-    plotter.book1D("BXDiff"   ,";CSC BX - GEM BX",2000, -1000, 1000);
-    plotter.book1D("nEvents"   ,";nCSCEvents/nCSCEvents with segments/nGEMEvents/nGEMEvents with CSC segments ",4,-0.5,3.5);
-  }
+    public:
+        void bookHistos(HistGetter& plotter){
+            plotter.book1D("BXDiff"   ,";CSC BX - GEM BX",2000, -1000, 1000);
+            plotter.book1D("nEvents"   ,";nCSCEvents/nCSCEvents with segments/nGEMEvents/nGEMEvents with CSC segments ",4,-0.5,3.5);
+        }
 
-  template<class Analyzer>
-  void fillHistos(Analyzer * ana, HistGetter& plotter){
-    AnalyzeCSC&  csc = ana->csc;
-    AnalyzeGEM&  gem = ana->gem;
+        template<class Analyzer>
+            void fillHistos(Analyzer * ana, HistGetter& plotter){
+                AnalyzeCSC&  csc = ana->csc;
+                AnalyzeGEM&  gem = ana->gem;
 
-    if(csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX > 0)
-      plotter.get1D("BXDiff")->Fill(csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX);
-    else
-      plotter.get1D("BXDiff")->Fill(  csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX + 3564 );
+                if(csc.wireInfo.wire_bx->size() == 0)
+                {
+                    cout << "csc wireInfo is empty evtN: " << csc.eventNumber << endl;
+                    return;
+                }
+                if(csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX > 0)
+                    plotter.get1D("BXDiff")->Fill(csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX);
+                    //if(csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX == 351) cout << "gemN: " << gem.eventNumber << " cscN: " << csc.eventNumber << endl;
+                else
+                    plotter.get1D("BXDiff")->Fill(  csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX + 3564 );
+                    //if(csc.wireInfo.wire_bx->at(0) - gem.gemInfo.BX + 3564 == 351) cout << "gemN: " << gem.eventNumber << " cscN: " << csc.eventNumber << endl;
+                    
 
-    plotter.get1D("nEvents")->Fill(0);
-    if(csc.segmentInfo.segment_pos_x->size()) plotter.get1D("nEvents")->Fill(1);
-    if(gem.gemInfo.vFats.size())plotter.get1D("nEvents")->Fill(2);
-    if(csc.segmentInfo.segment_pos_x->size() && gem.gemInfo.vFats.size())plotter.get1D("nEvents")->Fill(3);
-  }
+                plotter.get1D("nEvents")->Fill(0);
+                if(csc.segmentInfo.segment_pos_x->size()) plotter.get1D("nEvents")->Fill(1);
+                if(gem.gemInfo.vFats.size())plotter.get1D("nEvents")->Fill(2);
+                if(csc.segmentInfo.segment_pos_x->size() && gem.gemInfo.vFats.size())plotter.get1D("nEvents")->Fill(3);
+            }
 
 };
 

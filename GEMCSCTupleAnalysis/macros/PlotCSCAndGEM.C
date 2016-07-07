@@ -40,7 +40,7 @@ void PlotCSCAndGEM(std::string cscfileName="csc_forsync.root",std::string gemfil
   info.vFATChanMapName       = "slot_table_904_june09.csv";
 //  info.vFATChanMapName       = "slot_table.csv";
   Analyze a(cscfileName,gemfilename,&info);
-  a.analyze();
+  a.analyze(10000);
   a.write(outFileName);
 //  a.draw();
 }
