@@ -71,6 +71,8 @@ class CSCPatterns : public edm::EDAnalyzer {
         edm::EDGetTokenT<CSCCLCTDigiCollection> cd_token;
         edm::EDGetTokenT<CSCCorrelatedLCTDigiCollection> ld_token;
         edm::EDGetTokenT<CSCComparatorDigiCollection> cod_token;
+        edm::EDGetTokenT<reco::BeamSpot> obs_token;
+        edm::EDGetTokenT<CSCCorrelatedLCTDigiCollection> tflct_token;
 
         const CSCGeometry *theCSC;
         MuonServiceProxy *theService;
@@ -87,6 +89,7 @@ class CSCPatterns : public edm::EDAnalyzer {
         double Pt;
         double eta;
         double phi;
+        int q;
 
         //Segment data
         int Nseg;
@@ -100,6 +103,7 @@ class CSCPatterns : public edm::EDAnalyzer {
         vector<int> rhLay;
         vector<float> rhPos;
         vector<float> rhE;
+        vector<float> rhMax;
 
         //LCT data
         vector<int> lctId;
@@ -108,6 +112,14 @@ class CSCPatterns : public edm::EDAnalyzer {
         vector<vector<int>> lctKWG;
         vector<vector<int>> lctKHS;
         vector<vector<int>> lctBend;
+
+        //LCT data
+        vector<int> tflctId;
+        vector<vector<int>> tflctQ;
+        vector<vector<int>> tflctPat;
+        vector<vector<int>> tflctKWG;
+        vector<vector<int>> tflctKHS;
+        vector<vector<int>> tflctBend;
 
         //CLCT data
         vector<int> clctId;

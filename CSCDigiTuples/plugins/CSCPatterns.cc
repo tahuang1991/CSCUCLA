@@ -53,6 +53,8 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     cd_token = consumes<CSCCLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("clctDigiTag") );
     ld_token = consumes<CSCCorrelatedLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("lctDigiTag") );
     cod_token = consumes<CSCComparatorDigiCollection>( iConfig.getParameter<edm::InputTag>("compDigiTag") );
+    obs_token = consumes<reco::BeamSpot>( iConfig.getParameter<edm::InputTag>("offlineBeamSpotTag") );
+    tflct_token = consumes<CSCCorrelatedLCTDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("inputTag"));
 
     minPt     = iConfig.getParameter<double>("minPt");
 
@@ -90,6 +92,7 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     tree->Branch("Pt",&Pt,"Pt/D");
     tree->Branch("eta",&eta,"eta/D");
     tree->Branch("phi",&phi,"phi/D");
+    tree->Branch("q",&q,"q/D");
 
     tree->Branch("Nseg",&Nseg,"Nseg/I");
     tree->Branch("segEc",&segEc);
@@ -101,6 +104,7 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     tree->Branch("rhLay",&rhLay);
     tree->Branch("rhPos",&rhPos);
     tree->Branch("rhE",&rhE);
+    tree->Branch("rhMax",&rhMax);
 
     tree->Branch("lctId",&lctId);
     tree->Branch("lctQ",&lctQ);
@@ -108,6 +112,13 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     tree->Branch("lctKWG",&lctKWG);
     tree->Branch("lctKHS",&lctKHS);
     tree->Branch("lctBend",&lctBend);
+
+    tree->Branch("tflctId",&tflctId);
+    tree->Branch("tflctQ",&tflctQ);
+    tree->Branch("tflctPat",&tflctPat);
+    tree->Branch("tflctKWG",&tflctKWG);
+    tree->Branch("tflctKHS",&tflctKHS);
+    tree->Branch("tflctBend",&tflctBend);
 
     tree->Branch("clctId",&clctId);
     tree->Branch("clctQ",&clctQ);
@@ -202,11 +213,14 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<CSCCorrelatedLCTDigiCollection> cscLCTDigi;
     iEvent.getByToken(ld_token, cscLCTDigi);
 
+    edm::Handle<CSCCorrelatedLCTDigiCollection> tfLCTs;
+    iEvent.getByToken(tflct_token, tfLCTs);
+
     edm::Handle<CSCComparatorDigiCollection> compDigi;
     iEvent.getByToken(cod_token, compDigi);
 
-    Handle<reco::BeamSpot> beamSpotHandle;
-    iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
+    edm::Handle<reco::BeamSpot> beamSpotHandle;
+    iEvent.getByToken(obs_token, beamSpotHandle);
 
     //Loop over muons applying the selection used for the timing analysis
     for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
@@ -226,6 +240,7 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         rhLay.clear();
         rhPos.clear();
         rhE.clear();
+        rhMax.clear();
 
         lctId.clear();
         lctQ.clear();
@@ -233,6 +248,13 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         lctKWG.clear();
         lctKHS.clear();
         lctBend.clear();
+
+        tflctId.clear();
+        tflctQ.clear();
+        tflctPat.clear();
+        tflctKWG.clear();
+        tflctKHS.clear();
+        tflctBend.clear();
 
         clctId.clear();
         clctQ.clear();
@@ -270,6 +292,7 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         Pt=muon->pt();
         eta=muon->eta();
         phi=muon->phi();
+        q=muon->charge();
 
         cout << "Muon Eta: " << eta << "------------------------------------------------------------------------------------------------------------" << endl;
 
@@ -309,13 +332,19 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 rhId.push_back(idBuf);
                 rhLay.push_back(hitID.layer());
                 cout << "Matching RecHit Found!" << endl;
-                
+
                 int centerID = hiti->nStrips()/2;
+                float rhMaxBuf = -999.0;
+                for(int tI = 0; tI < int(hiti->nTimeBins()); tI++)
+                {
+                    if(hiti->adcs(centerID,tI) > rhMaxBuf) rhMaxBuf = hiti->adcs(centerID,tI);
+                }
                 int centerStr = hiti->channels(centerID);
                 float rhPosBuf = float(centerStr) + hiti->positionWithinStrip();
                 float rhEBuf = hiti->energyDepositedInLayer();
                 rhPos.push_back(rhPosBuf);
                 rhE.push_back(rhEBuf);
+                rhMax.push_back(rhMaxBuf);
             }
 
             // Check to see if chamber has already been extracted
@@ -359,6 +388,38 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 lctKWG.push_back(lctKWGBuf);
                 lctKHS.push_back(lctKHSBuf);
                 lctBend.push_back(lctBendBuf);
+            }
+
+            //Extact tfLCTs in this event
+            for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator lctDigi_id=tfLCTs->begin(); lctDigi_id!=tfLCTs->end(); lctDigi_id++)
+            {
+                CSCDetId tflctID = (*lctDigi_id).first;
+                cout << "tfLCTDigi ID: " << endl;
+                int idBuf = chamberSerial(tflctID);
+                if(idBuf != chamber) continue;
+                tflctId.push_back(idBuf);
+                cout << "Matching tfLCT Found!" << endl;
+
+                vector<int> tflctQBuf;
+                vector<int> tflctPatBuf;
+                vector<int> tflctKWGBuf;
+                vector<int> tflctKHSBuf;
+                vector<int> tflctBendBuf;
+
+                const CSCCorrelatedLCTDigiCollection::Range& range =(*lctDigi_id).second;
+                for(CSCCorrelatedLCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
+                {
+                    tflctQBuf.push_back((*digiItr).getQuality());
+                    tflctPatBuf.push_back((*digiItr).getPattern());
+                    tflctKWGBuf.push_back((*digiItr).getKeyWG());
+                    tflctKHSBuf.push_back((*digiItr).getStrip());
+                    tflctBendBuf.push_back((*digiItr).getBend());
+                }
+                tflctQ.push_back(tflctQBuf);
+                tflctPat.push_back(tflctPatBuf);
+                tflctKWG.push_back(tflctKWGBuf);
+                tflctKHS.push_back(tflctKHSBuf);
+                tflctBend.push_back(tflctBendBuf);
             }
 
             // Extract CLCT for all strips in this chamber
