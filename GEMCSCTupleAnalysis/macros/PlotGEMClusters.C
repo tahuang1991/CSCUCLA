@@ -3,7 +3,8 @@
 #include "../include/BaseCSCAndGEMAnalyzer.h"
 #include "include/GEMPlottingInfo.h"
 
-#include<iostream>
+#include <iostream>
+#include <algorithm>
 
 using namespace std;
 using namespace CSCGEMTuples;
@@ -19,6 +20,7 @@ class Analyze : public AnalyzeBoth {
         plotter.book1D("clus_dist","Cluster Distances;Distance (strips);Entries",10,0.5,10.5);
         plotter.book2D("clus_sizes2","Cluster Sizes;Cluster 1 Size;Cluster 2 Size",10,0.5,10.5,10,0.5,10.5);
         plotter.book2D("clus_sizes4up","Cluster Sizes;Cluster 1 Size;Cluster 2 Size",10,0.5,10.5,10,0.5,10.5);
+        plotter.book2D("stripMissMap"  ,"",384,-0.5,383.5,GEMGeoInfo::NROWS, -0.5, GEMGeoInfo::NROWS -.5);
     }
         virtual  ~Analyze() {};
 
@@ -48,20 +50,34 @@ class Analyze : public AnalyzeBoth {
             int C2LS = gem.gemInfo.clusters.at(1).getLastStrip();
             int C2R  = gem.gemInfo.clusters.at(1).nRow;
             int C2S  = gem.gemInfo.clusters.at(1).getNStrips();
+
+            auto translateStrip = [] (int strip) -> int {
+                strip -= 192;
+                strip *= -1;
+                strip += 192;
+                return strip;
+            };
+
             if(C1R == C2R && (C1FS/128 == C2FS/128 || C1FS/128 == C2LS/128 || C1LS/128 == C2FS/128 || C1LS/128 == C2LS/128)) 
             {
                 sameVFAT++;
                 float dis1 = C1FS - C2LS;
                 float dis2 = C2FS - C1LS;
-                if(fabs(dis1) < fabs(dis2)) plotter.get1D("clus_dist")->Fill(fabs(dis1));
-                else plotter.get1D("clus_dist")->Fill(fabs(dis2));
-                if(fabs(dis1) == 2 || fabs(dis2) == 2) plotter.get2D("clus_sizes2")->Fill(C1S,C2S);
+                float dis = min(fabs(dis1),fabs(dis2));
+                if(dis == 2 && C1LS - 1 != C2FS + 1) cout << "something is going on" << endl;
+                plotter.get1D("clus_dist")->Fill(dis);
+                if(dis == 2.0) 
+                {
+                    plotter.get2D("clus_sizes2")->Fill(C1S,C2S);
+                    plotter.get2D("stripMissMap")->Fill(translateStrip(C1LS - 1) - 1,C1R);
+                    //cout << "C1LS -1: " << C1LS - 1 << " Translated: " << translateStrip(C1LS - 1) << endl;
+                }
                 else if(fabs(dis1) > 4 && fabs(dis2) > 4) plotter.get2D("clus_sizes4up")->Fill(C1S,C2S);
                 return;
             }
             if((C1R+1 == C2R || C1R == C2R+1) 
-                && 
-                ((C2FS <= C1FS && C2FS >= C1LS) || (C2LS <= C1FS && C2LS >= C1LS)) 
+                    && 
+                    ((C2FS <= C1FS && C2FS >= C1LS) || (C2LS <= C1FS && C2LS >= C1LS)) 
               ) {sameY++; return;}
 
             Rand++;
