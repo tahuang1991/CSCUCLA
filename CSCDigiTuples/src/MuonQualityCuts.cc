@@ -22,7 +22,6 @@ MuonQualityCuts::~MuonQualityCuts()
 
 bool MuonQualityCuts::isGoodMuon(const edm::Event& iEvent, reco::MuonCollection::const_iterator muon, Handle<reco::BeamSpot>) 
 {
-    cout << "Is this a good muon?" << endl;
     bool isGlobal=false;
     if (muon->isGlobalMuon() && muon->isTrackerMuon()) 
     {
@@ -31,7 +30,6 @@ bool MuonQualityCuts::isGoodMuon(const edm::Event& iEvent, reco::MuonCollection:
         double normalizedChi2 = gm->normalizedChi2();
         int pixelHits = gm->hitPattern().numberOfValidPixelHits();
         int muonHits = gm->hitPattern().numberOfValidMuonHits();
-        cout << "pixelHits: " << pixelHits << " muonHits: " << muonHits << " trackerHits: " << trackerHits << " normalizedChi2: " << normalizedChi2 << endl;
         if (pixelHits>0 && muonHits>0 && trackerHits>10 && normalizedChi2<10) isGlobal=true;
     }
     return isGlobal;
@@ -51,6 +49,5 @@ bool MuonQualityCuts::isCosmicMuon(const edm::Event& iEvent, reco::MuonCollectio
             if (muon!=muon2 && angle<0.02) isCosmic=true;
         }
     }
-    //  if(isCosmic) std::cout<<"Cosmic"<<std::endl;
     return isCosmic;
 }
