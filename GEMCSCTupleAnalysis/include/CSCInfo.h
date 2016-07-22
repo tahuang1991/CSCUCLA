@@ -8,6 +8,7 @@
 #include <iostream>
 #include "BaseTupleAnalyzer.h"
 
+namespace CSCGEMTuples {
 
 typedef   unsigned char        size8 ; // 8 bit 0->255
 typedef   unsigned short int   size16; //16 bit 0->65536
@@ -39,6 +40,7 @@ public:
   std::vector<size8> * rh_strip_3 ;
   std::vector<float> * rh_pos_strip   ;
   std::vector<size8> * rh_n_wiregroups;
+  std::vector<size8> * rh_wireGrp     ;
 
   RecHitInfo() {
     rh_id           = new std::vector<size16>  ;
@@ -50,6 +52,7 @@ public:
     rh_strip_3      = new std::vector<size8>    ;
     rh_pos_strip    = new std::vector<float>               ;
     rh_n_wiregroups = new std::vector<size8>    ;
+    rh_wireGrp      = new std::vector<size8>    ;
   }
 
   void load(BaseTupleAnalyzer * analyzer) {
@@ -62,6 +65,7 @@ public:
     analyzer->setBranchAddress("rh_strip_3" ,&rh_strip_3 );
     analyzer->setBranchAddress("rh_pos_strip"   ,&rh_pos_strip   );
     analyzer->setBranchAddress("rh_n_wiregroups",&rh_n_wiregroups);
+    analyzer->setBranchAddress("rh_wireGrp"     ,&rh_wireGrp);
   }
 };
 
@@ -116,6 +120,7 @@ public:
   std::vector<size8>     *                       wire_lay ;
   std::vector<size8>     *                       wire_grp ;
   std::vector<size8>     *                       wire_time;
+  std::vector<int  >     *                       wire_bx  ;
 
 
   WireInfo() {
@@ -123,6 +128,7 @@ public:
     wire_lay = new std::vector<size8> ;
     wire_grp = new std::vector<size8> ;
     wire_time= new std::vector<size8> ;
+    wire_bx  = new std::vector<int  > ;
 
 
   }
@@ -132,6 +138,7 @@ public:
     analyzer->setBranchAddress("wire_lay"    ,&wire_lay );
     analyzer->setBranchAddress("wire_grp"    ,&wire_grp );
     analyzer->setBranchAddress("wire_time"   ,&wire_time);
+    analyzer->setBranchAddress("wire_bx"     ,&wire_bx   );
   }
 };
 
@@ -172,6 +179,16 @@ public:
   std::vector<float> *  segment_pos_y          ;
   std::vector<float> *  segment_dxdz      ;
   std::vector<float> *  segment_dydz        ;
+  std::vector<float> * segment_cov_dxdz       ;
+  std::vector<float> * segment_cov_dxdz_dydz  ;
+  std::vector<float> * segment_cov_dxdz_x     ;
+  std::vector<float> * segment_cov_dxdz_y     ;
+  std::vector<float> * segment_cov_dydz       ;
+  std::vector<float> * segment_cov_dydz_x     ;
+  std::vector<float> * segment_cov_dydz_y     ;
+  std::vector<float> * segment_cov_x          ;
+  std::vector<float> * segment_cov_x_y        ;
+  std::vector<float> * segment_cov_y          ;
   std::vector<float> *  segment_chisq          ;
   std::vector<size8> *  segment_nHits          ;
   std::vector<size16>*  segment_recHitIdx_1    ;
@@ -188,6 +205,16 @@ public:
     segment_pos_y       = new std::vector<float> ;
     segment_dxdz   = new std::vector<float> ;
     segment_dydz     = new std::vector<float> ;
+    segment_cov_dxdz      = new std::vector<float> ;
+    segment_cov_dxdz_dydz = new std::vector<float> ;
+    segment_cov_dxdz_x    = new std::vector<float> ;
+    segment_cov_dxdz_y    = new std::vector<float> ;
+    segment_cov_dydz      = new std::vector<float> ;
+    segment_cov_dydz_x    = new std::vector<float> ;
+    segment_cov_dydz_y    = new std::vector<float> ;
+    segment_cov_x         = new std::vector<float> ;
+    segment_cov_x_y       = new std::vector<float> ;
+    segment_cov_y         = new std::vector<float> ;
     segment_chisq       = new std::vector<float> ;
     segment_nHits       = new std::vector<size8> ;
     segment_recHitIdx_1 = new std::vector<size16>;
@@ -206,6 +233,16 @@ public:
     analyzer->setBranchAddress("segment_pos_y"       ,&segment_pos_y      );
     analyzer->setBranchAddress("segment_dxdz"   ,&segment_dxdz  );
     analyzer->setBranchAddress("segment_dydz"     ,&segment_dydz    );
+    analyzer->setBranchAddress("segment_cov_dxdz"     ,&segment_cov_dxdz       );
+    analyzer->setBranchAddress("segment_cov_dxdz_dydz",&segment_cov_dxdz_dydz  );
+    analyzer->setBranchAddress("segment_cov_dxdz_x"   ,&segment_cov_dxdz_x     );
+    analyzer->setBranchAddress("segment_cov_dxdz_y"   ,&segment_cov_dxdz_y     );
+    analyzer->setBranchAddress("segment_cov_dydz"     ,&segment_cov_dydz       );
+    analyzer->setBranchAddress("segment_cov_dydz_x"   ,&segment_cov_dydz_x     );
+    analyzer->setBranchAddress("segment_cov_dydz_y"   ,&segment_cov_dydz_y     );
+    analyzer->setBranchAddress("segment_cov_x"        ,&segment_cov_x          );
+    analyzer->setBranchAddress("segment_cov_x_y"      ,&segment_cov_x_y        );
+    analyzer->setBranchAddress("segment_cov_y"        ,&segment_cov_y          );
     analyzer->setBranchAddress("segment_chisq"       ,&segment_chisq      );
     analyzer->setBranchAddress("segment_nHits"       ,&segment_nHits      );
     analyzer->setBranchAddress("segment_recHitIdx_1" ,&segment_recHitIdx_1);
@@ -218,6 +255,90 @@ public:
 };
 
 
+class CLCTInfo {
+public:
+  std::vector<size16>* clct_id          ;
+  std::vector<size8> * clct_isvalid     ;
+  std::vector<size8> * clct_quality     ;
+  std::vector<size8> * clct_pattern     ;
+  std::vector<size8> * clct_stripType   ;
+  std::vector<size8> * clct_bend        ;
+  std::vector<size8> * clct_halfStrip   ;
+  std::vector<size8> * clct_CFEB        ;
+  std::vector<size8> * clct_BX          ;
+  std::vector<size8> * clct_trkNumber   ;
+  std::vector<size8> * clct_keyStrip    ;
 
+
+  CLCTInfo() {
+    clct_id         = new  std::vector<size16>;
+    clct_isvalid    = new  std::vector<size8> ;
+    clct_quality    = new  std::vector<size8> ;
+    clct_pattern    = new  std::vector<size8> ;
+    clct_stripType  = new  std::vector<size8> ;
+    clct_bend       = new  std::vector<size8> ;
+    clct_halfStrip  = new  std::vector<size8> ;
+    clct_CFEB       = new  std::vector<size8> ;
+    clct_BX         = new  std::vector<size8> ;
+    clct_trkNumber  = new  std::vector<size8> ;
+    clct_keyStrip   = new  std::vector<size8> ;
+
+
+  }
+
+  void load(BaseTupleAnalyzer * analyzer) {
+
+    analyzer->setBranchAddress("clct_id"         , &clct_id        );
+    analyzer->setBranchAddress("clct_isvalid"    , &clct_isvalid   );
+    analyzer->setBranchAddress("clct_quality"    , &clct_quality   );
+    analyzer->setBranchAddress("clct_pattern"    , &clct_pattern   );
+    analyzer->setBranchAddress("clct_stripType"  , &clct_stripType );
+    analyzer->setBranchAddress("clct_bend"       , &clct_bend      );
+    analyzer->setBranchAddress("clct_halfStrip"  , &clct_halfStrip );
+    analyzer->setBranchAddress("clct_CFEB"       , &clct_CFEB      );
+    analyzer->setBranchAddress("clct_BX"         , &clct_BX        );
+    analyzer->setBranchAddress("clct_trkNumber"  , &clct_trkNumber );
+    analyzer->setBranchAddress("clct_keyStrip"   , &clct_keyStrip  );
+  }
+};
+
+class ALCTInfo {
+public:
+  std::vector<size16>* alct_id          ;
+  std::vector<size8> * alct_isvalid     ;
+  std::vector<size8> * alct_quality     ;
+  std::vector<size8> * alct_accel       ;
+  std::vector<size8> * alct_collB       ;
+  std::vector<size8> * alct_wireGroup   ;
+  std::vector<size8> * alct_BX          ;
+  std::vector<size8> * alct_trkNumber   ;
+
+
+  ALCTInfo() {
+    alct_id         = new  std::vector<size16>;
+    alct_isvalid    = new  std::vector<size8> ;
+    alct_quality    = new  std::vector<size8> ;
+    alct_accel      = new  std::vector<size8> ;
+    alct_collB      = new  std::vector<size8> ;
+    alct_wireGroup  = new  std::vector<size8> ;
+    alct_BX         = new  std::vector<size8> ;
+    alct_trkNumber  = new  std::vector<size8> ;
+
+  }
+
+  void load(BaseTupleAnalyzer * analyzer) {
+
+    analyzer->setBranchAddress("alct_id"         , &alct_id        );
+    analyzer->setBranchAddress("alct_isvalid"    , &alct_isvalid   );
+    analyzer->setBranchAddress("alct_quality"    , &alct_quality   );
+    analyzer->setBranchAddress("alct_accel"    , &alct_accel   );
+    analyzer->setBranchAddress("alct_collB"    , &alct_collB   );
+    analyzer->setBranchAddress("alct_wireGroup"    , &alct_wireGroup   );
+    analyzer->setBranchAddress("alct_BX"         , &alct_BX        );
+    analyzer->setBranchAddress("alct_trkNumber"  , &alct_trkNumber );
+  }
+};
+
+}
 
 #endif

@@ -9,7 +9,8 @@
 #include <DataFormats/CSCDigi/interface/CSCComparatorDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCSegmentCollection.h>
-
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
 #include "CSCUCLA/CSCDigiTuples/include/CSCHelper.h"
 
 #include "TFile.h"
@@ -105,6 +106,7 @@ public:
     book("rh_strip_3"     ,rh_strip_3 );
     book("rh_pos_strip"   ,rh_pos_strip   );
     book("rh_n_wiregroups",rh_n_wiregroups);
+    book("rh_wireGrp"     ,rh_wireGrp);
 
 
   }
@@ -120,6 +122,7 @@ private:
   std::vector<size8>    rh_strip_3  ;
   std::vector<float>    rh_pos_strip   ;
   std::vector<size8>    rh_n_wiregroups;
+  std::vector<size8>    rh_wireGrp;
 
 
   virtual void reset(){
@@ -132,6 +135,7 @@ private:
     rh_strip_3  .clear();
     rh_pos_strip   .clear();
     rh_n_wiregroups.clear();
+    rh_wireGrp.clear();
   }
 
   public:
@@ -214,6 +218,7 @@ public:
     book("wire_lay"    ,wire_lay        );
     book("wire_grp"    ,wire_grp        );
     book("wire_time"   ,wire_time       );
+    book("wire_bx"     ,wire_bx         );
 
 
 
@@ -225,6 +230,7 @@ private:
   std::vector<size8>      wire_lay ;
   std::vector<size8>      wire_grp ;
   std::vector<size8>      wire_time;
+  std::vector<int>        wire_bx;
 
 
   virtual void reset(){
@@ -232,6 +238,7 @@ private:
     wire_lay  .clear();
     wire_grp  .clear();
     wire_time .clear();
+    wire_bx   .clear();
   }
 
   public:
@@ -293,6 +300,16 @@ public:
     book("segment_pos_y"       ,segment_pos_y      );
     book("segment_dxdz"        ,segment_dxdz  );
     book("segment_dydz"        ,segment_dydz    );
+    book("segment_cov_dxdz"     ,segment_cov_dxdz       );
+    book("segment_cov_dxdz_dydz",segment_cov_dxdz_dydz  );
+    book("segment_cov_dxdz_x"   ,segment_cov_dxdz_x     );
+    book("segment_cov_dxdz_y"   ,segment_cov_dxdz_y     );
+    book("segment_cov_dydz"     ,segment_cov_dydz       );
+    book("segment_cov_dydz_x"   ,segment_cov_dydz_x     );
+    book("segment_cov_dydz_y"   ,segment_cov_dydz_y     );
+    book("segment_cov_x"        ,segment_cov_x          );
+    book("segment_cov_x_y"      ,segment_cov_x_y        );
+    book("segment_cov_y"        ,segment_cov_y          );
     book("segment_chisq"       ,segment_chisq      );
     book("segment_nHits"       ,segment_nHits      );
     book("segment_recHitIdx_1" ,segment_recHitIdx_1);
@@ -311,8 +328,18 @@ private:
      std::vector<size16>  segment_id             ;
      std::vector<float>   segment_pos_x          ;
      std::vector<float>   segment_pos_y          ;
-     std::vector<float>   segment_dxdz      ;
-     std::vector<float>   segment_dydz        ;
+     std::vector<float>   segment_dxdz           ;
+     std::vector<float>   segment_dydz           ;
+     std::vector<float>   segment_cov_dxdz       ;
+     std::vector<float>   segment_cov_dxdz_dydz  ;
+     std::vector<float>   segment_cov_dxdz_x     ;
+     std::vector<float>   segment_cov_dxdz_y     ;
+     std::vector<float>   segment_cov_dydz       ;
+     std::vector<float>   segment_cov_dydz_x     ;
+     std::vector<float>   segment_cov_dydz_y     ;
+     std::vector<float>   segment_cov_x          ;
+     std::vector<float>   segment_cov_x_y        ;
+     std::vector<float>   segment_cov_y          ;
      std::vector<float>   segment_chisq          ;
      std::vector<size8>   segment_nHits          ;
      std::vector<size16>  segment_recHitIdx_1    ;
@@ -329,6 +356,16 @@ private:
     segment_pos_y       .clear();
     segment_dxdz        .clear();
     segment_dydz        .clear();
+    segment_cov_dxdz       .clear();
+    segment_cov_dxdz_dydz  .clear();
+    segment_cov_dxdz_x     .clear();
+    segment_cov_dxdz_y     .clear();
+    segment_cov_dydz       .clear();
+    segment_cov_dydz_x     .clear();
+    segment_cov_dydz_y     .clear();
+    segment_cov_x          .clear();
+    segment_cov_x_y        .clear();
+    segment_cov_y          .clear();
     segment_chisq       .clear();
     segment_nHits       .clear();
     segment_recHitIdx_1 .clear();
@@ -347,5 +384,107 @@ private:
 
 };
 
+class FillCLCTInfo : public FillInfo {
+public:
+
+  FillCLCTInfo(TreeContainer& tree) :FillInfo(tree) {
+
+    book("clct_id"         , clct_id        );
+    book("clct_isvalid"    , clct_isvalid   );
+    book("clct_quality"    , clct_quality   );
+    book("clct_pattern"    , clct_pattern   );
+    book("clct_stripType"  , clct_stripType );
+    book("clct_bend"       , clct_bend      );
+    book("clct_halfStrip"  , clct_halfStrip );
+    book("clct_CFEB"       , clct_CFEB      );
+    book("clct_BX"         , clct_BX        );
+    book("clct_trkNumber"  , clct_trkNumber );
+    book("clct_keyStrip"   , clct_keyStrip  );
+
+
+
+  }
+  virtual ~FillCLCTInfo() {};
+
+private:
+   std::vector<size16> clct_id          ;
+   std::vector<size8>  clct_isvalid     ;
+   std::vector<size8>  clct_quality     ;
+   std::vector<size8>  clct_pattern     ;
+   std::vector<size8>  clct_stripType   ;
+   std::vector<size8>  clct_bend        ;
+   std::vector<size8>  clct_halfStrip   ;
+   std::vector<size8>  clct_CFEB        ;
+   std::vector<size8>  clct_BX          ;
+   std::vector<size8>  clct_trkNumber   ;
+   std::vector<size8>  clct_keyStrip    ;
+
+
+  virtual void reset(){
+    clct_id         .clear();
+    clct_isvalid    .clear();
+    clct_quality    .clear();
+    clct_pattern    .clear();
+    clct_stripType  .clear();
+    clct_bend       .clear();
+    clct_halfStrip  .clear();
+    clct_CFEB       .clear();
+    clct_BX         .clear();
+    clct_trkNumber  .clear();
+    clct_keyStrip   .clear();
+  }
+
+  public:
+
+  void fill(const CSCCLCTDigiCollection& clcts);
+
+};
+
+class FillALCTInfo : public FillInfo {
+public:
+
+  FillALCTInfo(TreeContainer& tree) :FillInfo(tree) {
+
+    book("alct_id"         , alct_id        );
+    book("alct_isvalid"    , alct_isvalid   );
+    book("alct_quality"    , alct_quality   );
+    book("alct_accel"      , alct_accel     );
+    book("alct_collB"      , alct_collB     );
+    book("alct_wireGroup"  , alct_wireGroup );
+    book("alct_BX"         , alct_BX        );
+    book("alct_trkNumber"  , alct_trkNumber );
+
+
+
+  }
+  virtual ~FillALCTInfo() {};
+
+private:
+   std::vector<size16> alct_id          ;
+   std::vector<size8>  alct_isvalid     ;
+   std::vector<size8>  alct_quality     ;
+   std::vector<size8>  alct_accel       ;
+   std::vector<size8>  alct_collB       ;
+   std::vector<size8>  alct_wireGroup   ;
+   std::vector<size8>  alct_BX          ;
+   std::vector<size8>  alct_trkNumber   ;
+
+
+  virtual void reset(){
+    alct_id         .clear();
+    alct_isvalid    .clear();
+    alct_quality    .clear();
+    alct_accel      .clear();
+    alct_collB      .clear();
+    alct_wireGroup  .clear();
+    alct_BX         .clear();
+    alct_trkNumber  .clear();
+  }
+
+  public:
+
+  void fill(const CSCALCTDigiCollection& alcts);
+
+};
 
 #endif /*CSCUCLA_CSCDIGITUPLES_FILLCSCINFO_H*/

@@ -473,6 +473,7 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                 float rhMaxBuf = -999.0;
                 int centerID = hiti->nStrips()/2;
+
                 for(int tI = 0; tI < int(hiti->nTimeBins()); tI++)
                 {
                     if(hiti->adcs(centerID,tI) > rhMaxBuf) rhMaxBuf = hiti->adcs(centerID,tI);

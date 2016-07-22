@@ -25,6 +25,7 @@ void FillRecHitInfo::fill(const CSCRecHit2DCollection& recHits){
       rh_strip_3 .push_back(CSCHelper::convertTo<size8>(hiti->channels(2),"rh_strip_3"));
       rh_pos_strip   .push_back(hiti->positionWithinStrip());
       rh_n_wiregroups.push_back(CSCHelper::convertTo<size8>(hiti->nWireGroups(),"rh_n_wiregroups"));
+      rh_wireGrp.push_back(CSCHelper::convertTo<size8>(hiti->hitWire(),"rh_wireGrp"));
   }
 }
 
@@ -85,6 +86,7 @@ void FillWireInfo::fill(const CSCWireDigiCollection& wires){
         wire_lay .push_back(CSCHelper::convertTo<size8>(layer,"wire_lay"));
         wire_grp .push_back(CSCHelper::convertTo<size8>((*digiItr).getWireGroup(),"wire_grp"));
         wire_time.push_back(CSCHelper::convertTo<size8>((*digiItr).getTimeBin(),"wire_time"));
+        wire_bx.push_back(CSCHelper::convertTo<int>((*digiItr).getWireGroupBX(),"wire_bx"));
       }
   }
 
@@ -137,6 +139,7 @@ void FillSegmentInfo::fill(const CSCSegmentCollection& segments, const CSCRecHit
     float segX     = localPos.x();
     float segY     = localPos.y();
     LocalVector segDir = (*dSiter).localDirection();
+    AlgebraicSymMatrix covMatrix = (*dSiter).parametersError();
     const auto& segmentHits = dSiter->specificRecHits();
 
     segment_id   .push_back(CSCHelper::chamberSerial(id));
@@ -144,6 +147,16 @@ void FillSegmentInfo::fill(const CSCSegmentCollection& segments, const CSCRecHit
     segment_pos_y.push_back(segY);
     segment_dxdz.push_back(segDir.x()/segDir.z());
     segment_dydz.push_back(segDir.y()/segDir.z());
+    segment_cov_dxdz       .push_back(float(covMatrix[0][0]));
+    segment_cov_dxdz_dydz  .push_back(float(covMatrix[0][1]));
+    segment_cov_dxdz_x     .push_back(float(covMatrix[0][2]));
+    segment_cov_dxdz_y     .push_back(float(covMatrix[0][3]));
+    segment_cov_dydz       .push_back(float(covMatrix[1][1]));
+    segment_cov_dydz_x     .push_back(float(covMatrix[1][2]));
+    segment_cov_dydz_y     .push_back(float(covMatrix[1][3]));
+    segment_cov_x          .push_back(float(covMatrix[2][2]));
+    segment_cov_x_y        .push_back(float(covMatrix[2][3]));
+    segment_cov_y          .push_back(float(covMatrix[3][3]));
     segment_chisq.push_back((*dSiter).chi2());
     segment_nHits.push_back(CSCHelper::convertTo<size8>(segmentHits.size()  ,"segment_nHits"));
     segment_recHitIdx_1 .push_back((recHits && segmentHits.size() > 0) ?findRecHitIdx(segmentHits[0],recHits) : 0);
@@ -156,4 +169,50 @@ void FillSegmentInfo::fill(const CSCSegmentCollection& segments, const CSCRecHit
 }
 }
 
+void FillCLCTInfo::fill(const CSCCLCTDigiCollection& clcts){
+  reset();
 
+  for(CSCCLCTDigiCollection::DigiRangeIterator chamber=clcts.begin(); chamber != clcts.end(); chamber++) {
+    CSCDetId id = (*chamber).first;
+    const CSCCLCTDigiCollection::Range& range =(*chamber).second;
+    for(CSCCLCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
+    {
+
+      clct_id         .push_back(CSCHelper::chamberSerial(id));
+      clct_isvalid    .push_back(CSCHelper::convertTo<size8>(digiItr->isValid()  ,"clct_isvalid"  ));
+      clct_quality    .push_back(CSCHelper::convertTo<size8>(digiItr->getQuality()  ,"clct_quality"  ));
+      clct_pattern    .push_back(CSCHelper::convertTo<size8>(digiItr->getPattern()  ,"clct_pattern"  ));
+      clct_stripType  .push_back(CSCHelper::convertTo<size8>(digiItr->getStripType()  ,"clct_stripType"));
+      clct_bend       .push_back(CSCHelper::convertTo<size8>(digiItr->getBend()  ,"clct_bend"     ));
+      clct_halfStrip  .push_back(CSCHelper::convertTo<size8>(digiItr->getStrip()  ,"clct_halfStrip"));
+      clct_CFEB       .push_back(CSCHelper::convertTo<size8>(digiItr->getCFEB()  ,"clct_CFEB"     ));
+      clct_BX         .push_back(CSCHelper::convertTo<size8>(digiItr->getBX()  ,"clct_BX"       ));
+      clct_trkNumber  .push_back(CSCHelper::convertTo<size8>(digiItr->getTrknmb()  ,"clct_trkNumber"));
+      clct_keyStrip   .push_back(CSCHelper::convertTo<size8>(digiItr->getKeyStrip()  ,"clct_keyStrip" ));
+    }
+
+}
+}
+
+
+void FillALCTInfo::fill(const CSCALCTDigiCollection& alcts){
+  reset();
+
+  for(CSCALCTDigiCollection::DigiRangeIterator chamber=alcts.begin(); chamber != alcts.end(); chamber++) {
+    CSCDetId id = (*chamber).first;
+    const CSCALCTDigiCollection::Range& range =(*chamber).second;
+    for(CSCALCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
+    {
+
+      alct_id         .push_back(CSCHelper::chamberSerial(id));
+      alct_isvalid    .push_back(CSCHelper::convertTo<size8>(digiItr->isValid()  ,"alct_isvalid"  ));
+      alct_quality    .push_back(CSCHelper::convertTo<size8>(digiItr->getQuality()  ,"alct_quality"  ));
+      alct_accel      .push_back(CSCHelper::convertTo<size8>(digiItr->getAccelerator()  ,"alct_accel"  ));
+      alct_collB      .push_back(CSCHelper::convertTo<size8>(digiItr->getCollisionB()  ,"alct_collB"  ));
+      alct_wireGroup  .push_back(CSCHelper::convertTo<size8>(digiItr->getKeyWG()  ,"alct_wireGroup"));
+      alct_BX         .push_back(CSCHelper::convertTo<size8>(digiItr->getBX()  ,"alct_BX"       ));
+      alct_trkNumber  .push_back(CSCHelper::convertTo<size8>(digiItr->getTrknmb()  ,"alct_trkNumber"));
+    }
+
+}
+}

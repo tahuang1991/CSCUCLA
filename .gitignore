@@ -3,4 +3,4 @@
 *.d
 *.so
 *__init__.py
-*.root
+*.o
