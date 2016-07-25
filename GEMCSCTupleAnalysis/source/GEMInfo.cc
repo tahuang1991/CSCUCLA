@@ -14,6 +14,7 @@ void GEMInfo::build(Event * event) {
   std::vector<AMC13Event> v_amc13 = event->amc13s();
   std::vector<AMCdata> v_amc = v_amc13[0].amcs();
   BX = v_amc[0].BX();
+  evtN = event->GetEventNumber();
   std::vector<GEBdata> v_geb;
       v_geb = v_amc[0].gebs();
       for (unsigned int j = 0; j < v_geb.size(); j++) {
