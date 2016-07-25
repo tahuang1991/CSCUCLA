@@ -37,6 +37,7 @@
 #include "TTree.h"
 #include "TProfile2D.h"
 #include "TNtuple.h"
+#include "TLorentzVector.h"
 #include <memory>
 #include <vector>
 #include "TH1F.h"
@@ -81,11 +82,15 @@ class CSCPatterns : public edm::EDAnalyzer {
         double minPt;
         edm::InputTag CSCSegmentTags_;
 
+        int evN;
+
         int Event_EventNumber;
         int Event_RunNumber;
         int Event_LumiSection;
         int Event_BXCrossing;
 
+        bool ss;
+        bool os;
         double Pt;
         double eta;
         double phi;
@@ -113,7 +118,7 @@ class CSCPatterns : public edm::EDAnalyzer {
         vector<vector<int>> lctKHS;
         vector<vector<int>> lctBend;
 
-        //LCT data
+        //tfLCT data
         vector<int> tflctId;
         vector<vector<int>> tflctQ;
         vector<vector<int>> tflctPat;
@@ -164,8 +169,24 @@ class CSCPatterns : public edm::EDAnalyzer {
         TTree *tree;
         TH1F * hist;
         TH1F * ptmuon;
+        TH1F * ptmu1;
+        TH1F * ptmu2;
+        TH1F * dimuonMos;
+        TH1F * dimuonMss;
+        TH1F * dimuon3M;
+        TH1F * dimuonMos_1GS;
+        TH1F * dimuon3M_1GS;
+        TH1F * dimuonMos_1Gl;
+        TH1F * dimuon3M_1Gl;
+        TH1F * dimuonMos_2Gl;
+        TH1F * dimuon3M_2Gl;
+        TH1F * dimuonMos_1SA;
+        TH1F * dimuon3M_1SA;
+        TH1F * dimuonMos_2SA;
+        TH1F * dimuon3M_2SA;
         TH1F * etamuon;
         TH1F * ptsamuon;
+        TH1F * Nmuon_h;
         TH1F * chambernumber;
         TFile *file;
 

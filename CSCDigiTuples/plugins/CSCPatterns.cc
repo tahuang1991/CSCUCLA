@@ -54,12 +54,13 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     ld_token = consumes<CSCCorrelatedLCTDigiCollection>( iConfig.getParameter<edm::InputTag>("lctDigiTag") );
     cod_token = consumes<CSCComparatorDigiCollection>( iConfig.getParameter<edm::InputTag>("compDigiTag") );
     obs_token = consumes<reco::BeamSpot>( iConfig.getParameter<edm::InputTag>("offlineBeamSpotTag") );
-    tflct_token = consumes<CSCCorrelatedLCTDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("inputTag"));
+    tflct_token = consumes<CSCCorrelatedLCTDigiCollection>(iConfig.getParameter<edm::InputTag>("csctfDigiTag"));
 
     minPt     = iConfig.getParameter<double>("minPt");
 
     muonQualityCuts = new MuonQualityCuts(iConfig);
 
+    evN = 0;
 
     edm::ParameterSet serviceParameters = iConfig.getParameter<edm::ParameterSet>("ServiceParameters");
     theService = new MuonServiceProxy(serviceParameters);
@@ -78,10 +79,26 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     file = new TFile(filename.c_str(), "RECREATE");
     tree = new TTree("CSCDigiTree","Tree holding CSCDigis");
     hist = new TH1F("hist","hist",20,-0.5,19.5);
-    chambernumber= new TH1F("chambernumber","chambernumber",600,0.5,600.5);
-    ptmuon=new TH1F("ptmuon","ptmuon",50,0,500);
-    etamuon=new TH1F("etamuon","etamuon",80,-4,4);
-    ptsamuon=new TH1F("ptsamuon","ptsamuon",50,0,500);
+    chambernumber = new TH1F("chambernumber","chambernumber",600,0.5,600.5);
+    ptmuon = new TH1F("ptmuon","ptmuon",200,0,200);
+    ptmu1 = new TH1F("ptmu1","ptmu1",200,0,100);
+    ptmu2 = new TH1F("ptmu2","ptmu2",200,0,100);
+    etamuon = new TH1F("etamuon","etamuon",80,-4,4);
+    ptsamuon = new TH1F("ptsamuon","ptsamuon",50,0,500);
+    dimuonMos = new TH1F("dimuonMos","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuonMss = new TH1F("dimuonMss","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuon3M = new TH1F("dimuon3M","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
+    dimuonMos_1GS = new TH1F("dimuonMos_1GS","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuon3M_1GS = new TH1F("dimuon3M_1GS","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
+    dimuonMos_1Gl = new TH1F("dimuonMos_1Gl","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuon3M_1Gl = new TH1F("dimuon3M_1Gl","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
+    dimuonMos_1SA = new TH1F("dimuonMos_1SA","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuon3M_1SA = new TH1F("dimuon3M_1SA","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
+    dimuonMos_2Gl = new TH1F("dimuonMos_2Gl","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuon3M_2Gl = new TH1F("dimuon3M_2Gl","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
+    dimuonMos_2SA = new TH1F("dimuonMos_2SA","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
+    dimuon3M_2SA = new TH1F("dimuon3M_2SA","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
+    Nmuon_h = new TH1F("Nmuon_h","Number of Muons;Number of Muons;Events",11,-0.5,10.5);
 
 
     tree->Branch("Event_EventNumber",&Event_EventNumber,"Event_EventNumber/I");
@@ -89,10 +106,12 @@ CSCPatterns::CSCPatterns(const edm::ParameterSet& iConfig)
     tree->Branch("Event_LumiSection",&Event_LumiSection,"Event_LumiSection/I");
     tree->Branch("Event_BXCrossing",&Event_BXCrossing,"Event_BXCrossing/I");
 
+    tree->Branch("ss",&ss);
+    tree->Branch("os",&os);
     tree->Branch("Pt",&Pt,"Pt/D");
     tree->Branch("eta",&eta,"eta/D");
     tree->Branch("phi",&phi,"phi/D");
-    tree->Branch("q",&q,"q/D");
+    tree->Branch("q",&q,"q/I");
 
     tree->Branch("Nseg",&Nseg,"Nseg/I");
     tree->Branch("segEc",&segEc);
@@ -160,8 +179,24 @@ CSCPatterns::~CSCPatterns()
     tree->Write();
     hist->Write();
     ptmuon->Write();
+    ptmu1->Write();
+    ptmu2->Write();
+    dimuonMos->Write();
+    dimuonMss->Write();
+    dimuon3M->Write();
+    dimuonMos_1GS->Write();
+    dimuon3M_1GS->Write();
+    dimuonMos_1Gl->Write();
+    dimuon3M_1Gl->Write();
+    dimuonMos_1SA->Write();
+    dimuon3M_1SA->Write();
+    dimuonMos_2Gl->Write();
+    dimuon3M_2Gl->Write();
+    dimuonMos_2SA->Write();
+    dimuon3M_2SA->Write();
     etamuon->Write();
     ptsamuon->Write();
+    Nmuon_h->Write();
     chambernumber->Write();
     file->Close();
 
@@ -184,6 +219,8 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     Event_RunNumber       = iEvent.id().run();
     Event_LumiSection     = iEvent.eventAuxiliary().luminosityBlock();
     Event_BXCrossing      = iEvent.eventAuxiliary().bunchCrossing();
+
+    evN++;
 
     // Get the CSC Geometry :
     ESHandle<CSCGeometry> cscGeom;
@@ -222,14 +259,125 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<reco::BeamSpot> beamSpotHandle;
     iEvent.getByToken(obs_token, beamSpotHandle);
 
+    int Nmuon = 0;
+    int N_SAmuon = 0;
+    vector<TLorentzVector> muP4;
+    vector<int> muQ;
+    vector<bool> muGlobal;
+    vector<bool> muSA;
+    vector<bool> muTracker;
+    TLorentzVector sp4(0.0,0.0,0.0,0.0);
+
+    for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
+    {
+        Nmuon++;
+        ptmuon->Fill(muon->pt());
+        etamuon->Fill(muon->eta());
+        TLorentzVector muBuf;
+        muBuf.SetPtEtaPhiE(muon->pt(),muon->eta(),muon->phi(),muon->energy());
+        muP4.push_back(muBuf);
+        muQ.push_back(muon->charge());
+        muGlobal.push_back(muon->isGlobalMuon());
+        if(!muon->standAloneMuon()) muSA.push_back(false);
+        else muSA.push_back(true);
+        muTracker.push_back(muon->isTrackerMuon());
+        if (!muon->standAloneMuon()) continue;
+        if(N_SAmuon < 2) 
+        {
+            TLorentzVector pp;
+            pp.SetPtEtaPhiE(muon->pt(),muon->eta(),muon->phi(),muon->energy());
+            sp4 += pp;
+        }
+        N_SAmuon++;
+        ptsamuon->Fill(muon->standAloneMuon()->pt());
+    }
+
+    Nmuon_h->Fill(Nmuon);
+    int mu1Ios = -9;
+    int mu2Ios = -9;
+    int mu1Iss = -9;
+    int mu2Iss = -9;
+    for(int i = 0; i < int(muQ.size());i++)
+    {
+        for(int j = i + 1; j < int(muQ.size()); j++)
+        {
+            if(mu1Ios == -9 && (muGlobal.at(i) && muGlobal.at(j)) && muQ.at(i) != muQ.at(j))
+            {
+                mu1Ios = i;
+                mu2Ios = j;
+            }
+            if(mu1Iss == -9 && (muGlobal.at(i) && muGlobal.at(j)) && muQ.at(i) == muQ.at(j))
+            {
+                mu1Iss = i;
+                mu2Iss = j;
+            }
+        }
+    }
+    if(mu1Ios == -9 && mu1Iss == -9) return;
+    /*if(muGlobal.at(mu1Ios) || muGlobal.at(mu2Ios))
+    {
+        dimuonMos_1Gl->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+        dimuon3M_1Gl->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+    }
+    if(muGlobal.at(mu1Ios) && muGlobal.at(mu2Ios))
+    {
+        dimuonMos_2Gl->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+        dimuon3M_2Gl->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+    }
+    if(muSA.at(mu1Ios) || muSA.at(mu2Ios))
+    {
+        dimuonMos_1SA->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+        dimuon3M_1SA->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+    }
+    if(muSA.at(mu1Ios) && muSA.at(mu2Ios))
+    {
+        dimuonMos_2SA->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+        dimuon3M_2SA->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+    }
+    if( (muSA.at(mu1Ios) || muSA.at(mu2Ios)) && (muGlobal.at(mu1Ios) || muGlobal.at(mu2Ios)) )
+    {
+        dimuonMos_1GS->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+        dimuon3M_1GS->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+    }*/
+
+
+    float massJpsi = 3.0969;
+    float massWin = 0.1;
+    bool inMos = false;
+    bool inMss = false;
+    if(mu1Ios >= 0)
+    {
+        if( ( (muP4.at(mu1Ios) + muP4.at(mu2Ios)).M() < massJpsi - massWin ) || ( (muP4.at(mu1Ios) + muP4.at(mu2Ios)).M() > massJpsi + massWin ) ) inMos = true;
+        ptmu1->Fill(muP4.at(mu1Ios).Pt());
+        ptmu2->Fill(muP4.at(mu2Ios).Pt());
+        dimuonMos->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+        dimuon3M->Fill((muP4.at(mu1Ios) + muP4.at(mu2Ios)).M());
+    }
+    if(mu1Iss >= 0)
+    {
+        if( ( (muP4.at(mu1Iss) + muP4.at(mu2Iss)).M() < massJpsi - massWin ) || ( (muP4.at(mu1Iss) + muP4.at(mu2Iss)).M() > massJpsi + massWin ) ) inMss = true;
+        ptmu1->Fill(muP4.at(mu1Iss).Pt());
+        ptmu2->Fill(muP4.at(mu2Iss).Pt());
+        dimuonMss->Fill((muP4.at(mu1Iss) + muP4.at(mu2Iss)).M());
+    }
+    if(!(inMos || inMss)) return;
+    cout << "Event " << evN << " Processed!" << endl;
+    cout << "inMos: " << inMos << " inMss: " << inMss << " mu1Ios: " << mu1Ios << " mu2Ios: " << mu2Ios << " mu1Iss: " << mu1Iss << " mu2Iss: " << mu2Iss << endl;
+
+    int ind = -1;
     //Loop over muons applying the selection used for the timing analysis
     for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
     {
+        ind++;
+        os = false;
+        ss = false;
+        if( !((inMos && (ind==mu1Ios || ind==mu2Ios)) || (inMss && (ind==mu1Iss || ind==mu2Iss))) ) continue;
+        if(ind==mu1Ios || ind==mu2Ios) os = true;
+        if(ind==mu1Iss || ind==mu2Iss) ss = true;
 
         if (!muon->standAloneMuon()) continue;
         if (muon->pt()<minPt) continue;
-        if (!muonQualityCuts->isGoodMuon(iEvent, muon, beamSpotHandle)) continue;
-        cout << "It is a good Muon!!" << endl;
+        //if (!muonQualityCuts->isGoodMuon(iEvent, muon, beamSpotHandle)) continue;
 
         segEc.clear();
         segSt.clear();
@@ -285,23 +433,16 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         strip.clear();
         stripADCs.clear();
 
-        ptmuon->Fill(muon->pt());
-        etamuon->Fill(muon->eta());
-        ptsamuon->Fill(muon->standAloneMuon()->pt());
-
         Pt=muon->pt();
         eta=muon->eta();
         phi=muon->phi();
         q=muon->charge();
 
-        cout << "Muon Eta: " << eta << "------------------------------------------------------------------------------------------------------------" << endl;
 
         //Match selected muons to CSCSegments
         vector<const CSCSegment*> range = theMatcher->matchCSC(*muon->standAloneMuon(),iEvent);
 
         Nseg = range.size();
-
-        cout << "# of Matched CSCSegments: " << Nseg << endl;
 
         vector<int> ch_serialID;
 
@@ -311,7 +452,6 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             DetId id = (*rechit)->geographicalId();
 
             CSCDetId chamberId(id.rawId());
-            cout << "Segment ID: " << endl;
             int chamber = chamberSerial(chamberId);
             segEc.push_back(chamberId.endcap());
             segSt.push_back(chamberId.station());
@@ -324,17 +464,16 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             {
                 DetId idd = (hiti)->geographicalId();
                 CSCDetId hitID(idd.rawId());
-                int nStr = hiti->nStrips();
-                int nWireG = hiti->nWireGroups();
-                cout << "CSCRecHit2D ID: " << " nStrips: " << nStr << " nWireG: " << nWireG << endl;
+                //int nStr = hiti->nStrips();
+                //int nWireG = hiti->nWireGroups();
                 int idBuf = chamberSerial(hitID);
                 if(idBuf != chamber) continue;
                 rhId.push_back(idBuf);
                 rhLay.push_back(hitID.layer());
-                cout << "Matching RecHit Found!" << endl;
 
-                int centerID = hiti->nStrips()/2;
                 float rhMaxBuf = -999.0;
+                int centerID = hiti->nStrips()/2;
+
                 for(int tI = 0; tI < int(hiti->nTimeBins()); tI++)
                 {
                     if(hiti->adcs(centerID,tI) > rhMaxBuf) rhMaxBuf = hiti->adcs(centerID,tI);
@@ -362,11 +501,9 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator lctDigi_id=cscLCTDigi->begin(); lctDigi_id!=cscLCTDigi->end(); lctDigi_id++)
             {
                 CSCDetId lctID = (*lctDigi_id).first;
-                cout << "LCTDigi ID: " << endl;
                 int idBuf = chamberSerial(lctID);
                 if(idBuf != chamber) continue;
                 lctId.push_back(idBuf);
-                cout << "Matching LCT Found!" << endl;
 
                 vector<int> lctQBuf;
                 vector<int> lctPatBuf;
@@ -394,11 +531,9 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator lctDigi_id=tfLCTs->begin(); lctDigi_id!=tfLCTs->end(); lctDigi_id++)
             {
                 CSCDetId tflctID = (*lctDigi_id).first;
-                cout << "tfLCTDigi ID: " << endl;
                 int idBuf = chamberSerial(tflctID);
                 if(idBuf != chamber) continue;
                 tflctId.push_back(idBuf);
-                cout << "Matching tfLCT Found!" << endl;
 
                 vector<int> tflctQBuf;
                 vector<int> tflctPatBuf;
@@ -426,11 +561,9 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCCLCTDigiCollection::DigiRangeIterator clctDigi_id=cscCLCTDigi->begin(); clctDigi_id!=cscCLCTDigi->end(); clctDigi_id++)
             {
                 CSCDetId clctID = (*clctDigi_id).first;
-                cout << "CLCTDigi ID: " << endl;
                 int idBuf = chamberSerial(clctID);
                 if(idBuf != chamber) continue;
                 clctId.push_back(idBuf);
-                cout << "Matching CLCT Found!" << endl;
 
                 vector<int> clctQBuf;
                 vector<int> clctPatBuf;
@@ -458,11 +591,9 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCALCTDigiCollection::DigiRangeIterator alctDigi_id=cscALCTDigi->begin(); alctDigi_id!=cscALCTDigi->end(); alctDigi_id++)
             {
                 CSCDetId alctID = (*alctDigi_id).first;
-                cout << "ALCTDigi ID: " << endl;
                 int idBuf = chamberSerial(alctID);
                 if(idBuf != chamber) continue;
                 alctId.push_back(idBuf);
-                cout << "Matching ALCT Found!" << endl;
 
                 vector<int> alctQBuf;
                 vector<int> alctKWGBuf;
@@ -487,12 +618,10 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCComparatorDigiCollection::DigiRangeIterator compDigi_id=compDigi->begin(); compDigi_id!=compDigi->end(); compDigi_id++)
             {
                 CSCDetId compID = (*compDigi_id).first;
-                cout << "compDigi ID: " << endl;
                 int idBuf = chamberSerial(compID);
                 if(idBuf != chamber) continue;
                 compId.push_back(idBuf);
                 compLay.push_back(compID.layer());
-                cout << "Matching Comparator Found!" << endl;
 
                 vector<int> compStrBuf;
                 vector<int> compHSBuf;
@@ -514,12 +643,10 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCWireDigiCollection::DigiRangeIterator wireDigi_id=cscWireDigi->begin(); wireDigi_id!=cscWireDigi->end(); wireDigi_id++)
             {
                 CSCDetId wireID = (*wireDigi_id).first;
-                cout << "WireDigi ID: " << endl;
                 int idBuf = chamberSerial(wireID);
                 if(idBuf != chamber) continue;
                 wireId.push_back(idBuf);
                 wireLay.push_back(wireID.layer());
-                cout << "Matching WireDigi Found!" << endl;
 
                 vector<int> wireGrpBuf;
                 vector<vector<int> > wireTimeOnBuf;
@@ -538,10 +665,8 @@ CSCPatterns::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for (CSCStripDigiCollection::DigiRangeIterator stripDigi_id=cscStripDigi->begin(); stripDigi_id!=cscStripDigi->end(); stripDigi_id++)
             {
                 CSCDetId stripID = (*stripDigi_id).first;
-                cout << "StripDigi ID: " << endl;
                 int idBuf = chamberSerial(stripID);
                 if(idBuf != chamber) continue;
-                cout << "Matching StripDigi Found!" << endl;
                 stripId.push_back(idBuf);
                 stripLay.push_back(stripID.layer());
 
@@ -573,9 +698,9 @@ int CSCPatterns::chamberSerial( CSCDetId id ) {
     int ri = id.ring();
     int ch = id.chamber();
     int ec = id.endcap();
-    int lay = id.layer();
+    //int lay = id.layer();
     int kSerial = ch;
-    cout<<"Endcap "<<ec<<" Station "<<st<<" Ring "<<ri<<" Chamber "<<ch<<" Layer "<<lay<<endl;
+    //cout<<"Endcap "<<ec<<" Station "<<st<<" Ring "<<ri<<" Chamber "<<ch<<" Layer "<<lay<<endl;
     if (st == 1 && ri == 1) kSerial = ch;
     if (st == 1 && ri == 2) kSerial = ch + 36;
     if (st == 1 && ri == 3) kSerial = ch + 72;
