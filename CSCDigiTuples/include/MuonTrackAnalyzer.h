@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
@@ -35,18 +36,19 @@
 
 #include "CSCUCLA/CSCDigiTuples/include/PtassignmentHelper.h"
 #include "CSCUCLA/CSCDigiTuples/include/CSCStubPatterns.h"
-
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/CSCRecHit/interface/CSCSegment.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TFile.h"
+#include "TDirectoryFile.h"
 #include "TTree.h"
 #include "TProfile2D.h"
 #include "TNtuple.h"
 #include "TLorentzVector.h"
+#include "TH1F.h"
 #include <memory>
 #include <vector>
-#include "TH1F.h"
 
 using namespace std;
 using namespace edm;
@@ -103,6 +105,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
 
 		float dR_seg_lct_;
 
+     
         int evN;
 
         int Event_EventNumber;
@@ -196,6 +199,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         vector<vector<int>> compStr;
         vector<vector<int>> compHS;
         vector<vector<vector<int>>> compTimeOn;
+        vector<vector<float>> compphi_fit;
 
         //Wire Data
         vector<int> wireId;
@@ -238,7 +242,8 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         TH1F * ptsamuon;
         TH1F * Nmuon_h;
         TH1F * chambernumber;
-        TFile *file;
+        //TFile *file;
+		edm::Service< TFileService > fs;
 
 };
 

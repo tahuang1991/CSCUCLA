@@ -48,6 +48,7 @@ Implementation:
 MuonTrackAnalyzer::MuonTrackAnalyzer(const edm::ParameterSet& iConfig)
 
 {
+	std::cout <<"MuonTrackAnalyzer constructor "<< std::endl;
     //now do what ever initialization is needed
     mc_token = consumes<reco::MuonCollection>( iConfig.getParameter<edm::InputTag>("muonCollection") );
     wd_token = consumes<CSCWireDigiCollection>( iConfig.getParameter<edm::InputTag>("wireDigiTag") );
@@ -60,6 +61,7 @@ MuonTrackAnalyzer::MuonTrackAnalyzer(const edm::ParameterSet& iConfig)
     tflct_token = consumes<CSCCorrelatedLCTDigiCollection>(iConfig.getParameter<edm::InputTag>("csctfDigiTag"));
 
     minPt     = iConfig.getParameter<double>("minPt");
+    dR_seg_lct_     = iConfig.getParameter<double>("dR_seg_lct");
 
     //muonQualityCuts = new MuonQualityCuts(iConfig);
 
@@ -76,16 +78,17 @@ MuonTrackAnalyzer::MuonTrackAnalyzer(const edm::ParameterSet& iConfig)
     CSCSegmentTags_=matchParameters.getParameter<edm::InputTag>("CSCsegments");
     //CSCSegmentTags_ = iConfig.getParameter<edm::InputTag>("CSCsegments");
     allSegmentsCSCToken = iC.consumes<CSCSegmentCollection>(CSCSegmentTags_) ;
+    //allSegmentsCSCToken = consumes<CSCSegmentCollection>(iConfig.getParameter<edm::InputTag>("cscSegmentTag"));
 
     filename = iConfig.getUntrackedParameter<std::string>("NtupleFileName");
     cout << endl << endl << "Filename " << filename << endl << endl;
-    file = new TFile(filename.c_str(), "RECREATE");
-    tree = new TTree("CSCDigiTree","Tree holding CSCDigis");
+    //file = new TFile(filename.c_str(), "RECREATE");
+    //tree = new TTree("CSCDigiTree","Tree holding CSCDigis");
+    /*
     hist = new TH1F("hist","hist",20,-0.5,19.5);
     chambernumber = new TH1F("chambernumber","chambernumber",600,0.5,600.5);
     ptmuon = new TH1F("ptmuon","ptmuon",200,0,200);
     etamuon = new TH1F("etamuon","etamuon",80,-4,4);
-    /*
     ptmu1 = new TH1F("ptmu1","ptmu1",200,0,100);
     ptmu2 = new TH1F("ptmu2","ptmu2",200,0,100);
     ptsamuon = new TH1F("ptsamuon","ptsamuon",50,0,500);
@@ -102,85 +105,10 @@ MuonTrackAnalyzer::MuonTrackAnalyzer(const edm::ParameterSet& iConfig)
     dimuon3M_2Gl = new TH1F("dimuon3M_2Gl","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
     dimuonMos_2SA = new TH1F("dimuonMos_2SA","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,0,10);
     dimuon3M_2SA = new TH1F("dimuon3M_2SA","Mass of Dimuons;m_{#mu#mu} [GeV];Events",100,2.0,4.0);
-    */
     Nmuon_h = new TH1F("Nmuon_h","Number of Muons;Number of Muons;Events",11,-0.5,10.5);
+    */
 
 
-    tree->Branch("Event_EventNumber",&Event_EventNumber,"Event_EventNumber/I");
-    tree->Branch("Event_RunNumber",&Event_RunNumber,"Event_RunNumber/I");
-    tree->Branch("Event_LumiSection",&Event_LumiSection,"Event_LumiSection/I");
-    tree->Branch("Event_BXCrossing",&Event_BXCrossing,"Event_BXCrossing/I");
-
-    tree->Branch("ss",&ss);
-    tree->Branch("os",&os);
-    tree->Branch("Pt",&Pt,"Pt/D");
-    tree->Branch("eta",&eta,"eta/D");
-    tree->Branch("phi",&phi,"phi/D");
-    tree->Branch("q",&q,"q/I");
-
-    tree->Branch("Nseg",&Nseg,"Nseg/I");
-    tree->Branch("segEc",&segEc);
-    tree->Branch("segSt",&segSt);
-    tree->Branch("segRi",&segRi);
-    tree->Branch("segCh",&segCh);
-    tree->Branch("segeta",&segeta);
-    tree->Branch("segphi",&segphi);
-    tree->Branch("segx",&segx);
-    tree->Branch("segy",&segy);
-    tree->Branch("segz",&segz);
-
-    tree->Branch("rhId",&rhId);
-    tree->Branch("rhLay",&rhLay);
-    tree->Branch("rhPos",&rhPos);
-    tree->Branch("rhE",&rhE);
-    tree->Branch("rhMax",&rhMax);
-
-    tree->Branch("lctId",&lctId);
-    tree->Branch("lctQ",&lctQ);
-    tree->Branch("lctPat",&lctPat);
-    tree->Branch("lctKWG",&lctKWG);
-    tree->Branch("lctKHS",&lctKHS);
-    tree->Branch("lctBend",&lctBend);
-    tree->Branch("lcteta",&lcteta);
-    tree->Branch("lctphi",&lctphi);
-    tree->Branch("lcteta_fit",&lcteta_fit);
-    tree->Branch("lctphi_fit",&lctphi_fit);
-
-    tree->Branch("tflctId",&tflctId);
-    tree->Branch("tflctQ",&tflctQ);
-    tree->Branch("tflctPat",&tflctPat);
-    tree->Branch("tflctKWG",&tflctKWG);
-    tree->Branch("tflctKHS",&tflctKHS);
-    tree->Branch("tflctBend",&tflctBend);
-
-    tree->Branch("clctId",&clctId);
-    tree->Branch("clctQ",&clctQ);
-    tree->Branch("clctPat",&clctPat);
-    tree->Branch("clctKHS",&clctKHS);
-    tree->Branch("clctCFEB",&clctCFEB);
-    tree->Branch("clctBend",&clctBend);
-
-    tree->Branch("alctId",&alctId);
-    tree->Branch("alctQ",&alctQ);
-    tree->Branch("alctKWG",&alctKWG);
-    tree->Branch("alctAc",&alctAc);
-    tree->Branch("alctPB",&alctPB);
-
-    tree->Branch("compId",&compId);
-    tree->Branch("compLay",&compLay);
-    tree->Branch("compStr",&compStr);
-    tree->Branch("compHS",&compHS);
-    tree->Branch("compTimeOn",&compTimeOn);
-
-    tree->Branch("wireId",&wireId);
-    tree->Branch("wireLay",&wireLay);
-    tree->Branch("wireGrp",&wireGrp);
-    tree->Branch("wireTimeOn",&wireTimeOn);
-
-    tree->Branch("stripId",&stripId);
-    tree->Branch("stripLay",&stripLay);
-    tree->Branch("strip",&strip);
-    tree->Branch("stripADCs",&stripADCs);
 
 }
 
@@ -189,10 +117,13 @@ MuonTrackAnalyzer::~MuonTrackAnalyzer()
 {
     // do anything here that needs to be done at desctruction time
     // (e.g. close files, deallocate resources etc.)
-    file->cd();
-    tree->Write();
-    hist->Write();
-    ptmuon->Write();
+    //file->cd();
+    //tree->Write();
+    //hist->Write();
+    //ptmuon->Write();
+    //etamuon->Write();
+    //Nmuon_h->Write();
+    //chambernumber->Write();
     /*ptmu1->Write();
     ptmu2->Write();
     dimuonMos->Write();
@@ -208,12 +139,9 @@ MuonTrackAnalyzer::~MuonTrackAnalyzer()
     dimuon3M_2Gl->Write();
     dimuonMos_2SA->Write();
     dimuon3M_2SA->Write();
-	*/
-    etamuon->Write();
     ptsamuon->Write();
-    Nmuon_h->Write();
-    chambernumber->Write();
-    file->Close();
+	*/
+    //file->Close();
 
 
 }
@@ -318,11 +246,12 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     iEvent.getByToken(sd_token,cscStripDigi);
 
     Handle<reco::MuonCollection> muons;
+    //Handle<vector<pat::Muon>> muons;
     iEvent.getByToken(mc_token, muons);
 
     edm::Handle<CSCSegmentCollection> allSegmentsCSC;
     iEvent.getByToken(allSegmentsCSCToken, allSegmentsCSC);
-    hist->Fill(allSegmentsCSC->size());
+    //hist->Fill(allSegmentsCSC->size());
     //if(allSegmentsCSC->size()>14) return;
 
     edm::Handle<CSCALCTDigiCollection> cscALCTDigi;
@@ -340,7 +269,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     edm::Handle<CSCComparatorDigiCollection> compDigi;
     iEvent.getByToken(cod_token, compDigi);
 
-    edm::Handle<reco::BeamSpot> beamSpotHandle;
+    /*edm::Handle<reco::BeamSpot> beamSpotHandle;
     iEvent.getByToken(obs_token, beamSpotHandle);
 
 
@@ -358,6 +287,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	beamspotx = beamSpot.x0();
 	beamspoty = beamSpot.y0();
 	beamspotz = beamSpot.z0();
+	*/
 
 
     int Nmuon = 0;
@@ -372,8 +302,8 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
     {
         Nmuon++;
-        ptmuon->Fill(muon->pt());
-        etamuon->Fill(muon->eta());
+        //ptmuon->Fill(muon->pt());
+        //etamuon->Fill(muon->eta());
         TLorentzVector muBuf;
         muBuf.SetPtEtaPhiE(muon->pt(),muon->eta(),muon->phi(),muon->energy());
         muP4.push_back(muBuf);
@@ -383,17 +313,20 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         else muSA.push_back(true);
         muTracker.push_back(muon->isTrackerMuon());
         if (!muon->standAloneMuon()) continue;
+		/*
         if(N_SAmuon < 2) 
         {
             TLorentzVector pp;
             pp.SetPtEtaPhiE(muon->pt(),muon->eta(),muon->phi(),muon->energy());
             sp4 += pp;
-        }
+        }*/
         N_SAmuon++;
-        ptsamuon->Fill(muon->standAloneMuon()->pt());
+		
+       // ptsamuon->Fill(muon->standAloneMuon()->pt());
     }
 
-    Nmuon_h->Fill(Nmuon);
+	std::cout <<"number of muons "<< Nmuon << " standalone muons "<< N_SAmuon << std::endl;
+    //Nmuon_h->Fill(Nmuon);
 	/*
     int mu1Ios = -9;
     int mu2Ios = -9;
@@ -478,6 +411,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         //if(ind==mu1Iss || ind==mu2Iss) ss = true;
 
         if (!muon->standAloneMuon()) continue;
+		std::cout <<"muon pt "<< muon->pt() <<" eta "<< muon->eta() << std::endl;
         if (muon->pt()<minPt) continue;
         //if (!muonQualityCuts->isGoodMuon(iEvent, muon, beamSpotHandle)) continue;
 
@@ -491,9 +425,11 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
         Nseg = range.size();
 
+
+		std::cout <<"matched CSSegment size  "<< range.size() << std::endl;
         vector<int> ch_serialID;
 
-        for (vector<const CSCSegment*>::iterator rechit = range.begin(); rechit!=range.end();++rechit) 
+        for (vector<const CSCSegment*>::iterator rechit = range.begin(); rechit!=range.end(); ++rechit) 
         {
             // Create the ChamberId
             DetId id = (*rechit)->geographicalId();
@@ -504,9 +440,12 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             segSt.push_back(chamberId.station());
             segRi.push_back(chamberId.ring());
             segCh.push_back(chamberId.chamber());
-			GlobalPoint seggp = theCSC->idToDet((*rechit)-> cscDetId())->surface().toGlobal((*rechit)->localPosition());
+			std::cout <<"matched CSSegment "<< *(*rechit) << std::endl;
+			GlobalPoint seggp = theCSC->idToDet((*rechit)->cscDetId())->surface().toGlobal((*rechit)->localPosition());
 			segeta.push_back(seggp.eta());
 			segphi.push_back(seggp.phi());
+			std::cout <<"segment eta "<< seggp.eta() <<" phi "<< seggp.phi() << std::endl;
+			
 
 
             const vector<CSCRecHit2D> hits2d = (*rechit)->specificRecHits();
@@ -514,6 +453,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             {
                 DetId idd = (hiti)->geographicalId();
                 CSCDetId hitID(idd.rawId());
+				std::cout <<"\t recHits "<< *hiti << std::endl;
                 //int nStr = hiti->nStrips();
                 //int nWireG = hiti->nWireGroups();
                 int idBuf = chamberSerial(hitID);
@@ -540,12 +480,13 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             bool chDone = false;
             for(vector<int>::iterator chid = ch_serialID.begin(); chid!=ch_serialID.end(); ++chid)
             {
+				//std::cout <<"already looped the chamber "<< *chid <<" current chamber "<< chamber << std::endl;
                 if((*chid) == chamber) chDone = true;
             }
 
             if(chDone) continue;
             ch_serialID.push_back(chamber);
-            chambernumber->Fill(chamber);
+            //chambernumber->Fill(chamber);
 
 			bool foundLCT = false;
 			float mindR = dR_seg_lct_;
@@ -555,6 +496,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator lctDigi_id=cscLCTDigi->begin(); lctDigi_id!=cscLCTDigi->end(); lctDigi_id++)
             {
                 CSCDetId lctID = (*lctDigi_id).first;
+				std::cout <<"to match LCT CSCid "<<  lctID << std::endl;
                 int idBuf = chamberSerial(lctID);
                 if(idBuf != chamber) continue;
 
@@ -576,6 +518,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 						mindR = dR;
 						foundLCT = true;
 						gpLCT = gptmp;
+						std::cout <<"Found matched LCT " <<  *digiItr <<" eta "<< gpLCT.eta()<<" phi "<< gpLCT.phi() << std::endl;
 					}
                     //lctQBuf.push_back((*digiItr).getQuality());
                     //lctPatBuf.push_back((*digiItr).getPattern());
@@ -863,14 +806,22 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				  beta = 0.0;
 			  }
 				  std::cout <<"fitting results: alpha "<< alpha <<" beta "<< beta << std::endl;
+			  vector<float> phifitbuf;
 			  for (int i=0; i<6; i++){
 				  fit_z_layers[i] = cscChamber->layer(i+1)->centerOfStrip(20).z();
 				  fit_phi_layers[i] = PtassignmentHelper::normalizePhi(alpha + beta * fit_z_layers[i]);
+				  phifitbuf.push_back(fit_phi_layers[i]);
+				  if (i == CSCConstants::KEY_CLCT_LAYER){
+					  //lcteta.push_back(gpLCT.eta());
+					  lctphi_fit.push_back(fit_phi_layers[i] );
+
+				  }
 				  //if (stripBits > 0)
 					//fit_phi_layers[i] = (std::floor(fit_phi_layers[i]/stripPhiPitch) + 0.5)*stripPhiPitch;
 				  //if (verbose_>0)
 					std::cout <<"i "<< i <<" fit_z "<< fit_z_layers[i]<< " fit_phi "<< fit_phi_layers[i]<<" perp "<< perp << std::endl;
 			  }
+			  compphi_fit.push_back(phifitbuf);
 
 			}//foundLCT
 
@@ -1014,6 +965,84 @@ MuonTrackAnalyzer::cscHalfStripWidth(CSCDetId id)
     void 
 MuonTrackAnalyzer::beginJob()
 {
+	tree = fs->make<TTree>("CSCDigiTree","Muon Track Analyzer tree");
+
+    tree->Branch("Event_EventNumber",&Event_EventNumber,"Event_EventNumber/I");
+    tree->Branch("Event_RunNumber",&Event_RunNumber,"Event_RunNumber/I");
+    tree->Branch("Event_LumiSection",&Event_LumiSection,"Event_LumiSection/I");
+    tree->Branch("Event_BXCrossing",&Event_BXCrossing,"Event_BXCrossing/I");
+
+    //tree->Branch("ss",&ss);
+    //tree->Branch("os",&os);
+    tree->Branch("Pt",&Pt,"Pt/D");
+    tree->Branch("eta",&eta,"eta/D");
+    tree->Branch("phi",&phi,"phi/D");
+    tree->Branch("q",&q,"q/I");
+
+    tree->Branch("Nseg",&Nseg,"Nseg/I");
+    tree->Branch("segEc",&segEc);
+    tree->Branch("segSt",&segSt);
+    tree->Branch("segRi",&segRi);
+    tree->Branch("segCh",&segCh);
+    tree->Branch("segeta",&segeta);
+    tree->Branch("segphi",&segphi);
+    tree->Branch("segx",&segx);
+    tree->Branch("segy",&segy);
+    tree->Branch("segz",&segz);
+
+    tree->Branch("rhId",&rhId);
+    tree->Branch("rhLay",&rhLay);
+    tree->Branch("rhPos",&rhPos);
+    tree->Branch("rhE",&rhE);
+    tree->Branch("rhMax",&rhMax);
+
+    tree->Branch("lctId",&lctId);
+    tree->Branch("lctQ",&lctQ);
+    tree->Branch("lctPat",&lctPat);
+    tree->Branch("lctKWG",&lctKWG);
+    tree->Branch("lctKHS",&lctKHS);
+    tree->Branch("lctBend",&lctBend);
+    tree->Branch("lcteta",&lcteta);
+    tree->Branch("lctphi",&lctphi);
+    tree->Branch("lcteta_fit",&lcteta_fit);
+    tree->Branch("lctphi_fit",&lctphi_fit);
+
+    tree->Branch("tflctId",&tflctId);
+    tree->Branch("tflctQ",&tflctQ);
+    tree->Branch("tflctPat",&tflctPat);
+    tree->Branch("tflctKWG",&tflctKWG);
+    tree->Branch("tflctKHS",&tflctKHS);
+    tree->Branch("tflctBend",&tflctBend);
+
+    tree->Branch("clctId",&clctId);
+    tree->Branch("clctQ",&clctQ);
+    tree->Branch("clctPat",&clctPat);
+    tree->Branch("clctKHS",&clctKHS);
+    tree->Branch("clctCFEB",&clctCFEB);
+    tree->Branch("clctBend",&clctBend);
+
+    tree->Branch("alctId",&alctId);
+    tree->Branch("alctQ",&alctQ);
+    tree->Branch("alctKWG",&alctKWG);
+    tree->Branch("alctAc",&alctAc);
+    tree->Branch("alctPB",&alctPB);
+
+    tree->Branch("compId",&compId);
+    tree->Branch("compLay",&compLay);
+    tree->Branch("compStr",&compStr);
+    tree->Branch("compHS",&compHS);
+    tree->Branch("compHS",&compphi_fit);
+    tree->Branch("compTimeOn",&compTimeOn);
+
+    tree->Branch("wireId",&wireId);
+    tree->Branch("wireLay",&wireLay);
+    tree->Branch("wireGrp",&wireGrp);
+    tree->Branch("wireTimeOn",&wireTimeOn);
+
+    tree->Branch("stripId",&stripId);
+    tree->Branch("stripLay",&stripLay);
+    tree->Branch("strip",&strip);
+    tree->Branch("stripADCs",&stripADCs);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
