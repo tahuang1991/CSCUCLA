@@ -135,6 +135,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         vector<int> segSt;
         vector<int> segRi;
         vector<int> segCh;
+        vector<int> segId;
 		vector<float> segeta;
 		vector<float> segphi;
 		vector<float> segx;
@@ -157,6 +158,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         vector<int> lctBend;
         vector<float> lcteta;
         vector<float> lctphi;
+		vector<float> dRSegLCT;
         vector<float> lcteta_fit;
         vector<float> lctphi_fit;
         //vector<vector<int>> lctQ;

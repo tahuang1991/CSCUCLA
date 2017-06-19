@@ -154,6 +154,7 @@ MuonTrackAnalyzer::clear(){
         segSt.clear();
         segRi.clear();
         segCh.clear();
+		segId.clear();
         segeta.clear();
         segphi.clear();
         segx.clear();
@@ -174,6 +175,7 @@ MuonTrackAnalyzer::clear(){
         lctBend.clear();
         lcteta.clear();
         lctphi.clear();
+		dRSegLCT.clear();
         lcteta_fit.clear();
         lctphi_fit.clear();
 
@@ -400,6 +402,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	*/
 
     int ind = -1;
+	vector<int> ch_serialID;
     //Loop over muons applying the selection used for the timing analysis
     for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
     {
@@ -427,7 +430,6 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
 		std::cout <<"matched CSSegment size  "<< range.size() << std::endl;
-        vector<int> ch_serialID;
 
         for (vector<const CSCSegment*>::iterator rechit = range.begin(); rechit!=range.end(); ++rechit) 
         {
@@ -436,10 +438,12 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
             CSCDetId chamberId(id.rawId());
             int chamber = chamberSerial(chamberId);
+			
             segEc.push_back(chamberId.endcap());
             segSt.push_back(chamberId.station());
             segRi.push_back(chamberId.ring());
             segCh.push_back(chamberId.chamber());
+			segId.push_back(chamber);
 			std::cout <<"matched CSSegment "<< *(*rechit) << std::endl;
 			GlobalPoint seggp = theCSC->idToDet((*rechit)->cscDetId())->surface().toGlobal((*rechit)->localPosition());
 			segeta.push_back(seggp.eta());
@@ -489,7 +493,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             //chambernumber->Fill(chamber);
 
 			bool foundLCT = false;
-			float mindR = dR_seg_lct_;
+			float mindR = 99.0;
 			GlobalPoint gpLCT;
 			CSCCorrelatedLCTDigi matchedLCT; 
             // Extract LCT for all strips in this chamber
@@ -544,6 +548,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				lctBend.push_back(matchedLCT.getBend());
 				lcteta.push_back(gpLCT.eta());
 				lctphi.push_back(gpLCT.phi());
+				dRSegLCT.push_back(mindR);
 
 			}
 
@@ -801,7 +806,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			  float fit_phi_layers[6] = {0.,0.,0.,0.,0.,0.};
 			  PtassignmentHelper::calculateAlphaBeta(zs, phis, ezs, ephis, status, alpha, beta);
 			  if (phis.size() <= 2 or fabs(alpha)>=99){
-				  std::cout <<"warning, falied to fit comparator digis,num of digis: "<< phis.size()<<" alpha "<< alpha <<" beta "<< beta << std::endl;
+				  std::cout <<"warning, falied to fit comparator digis,num of digis: "<< phis.size()<<" alpha "<< alpha <<" beta "<< beta <<" just LCT position as fitting position"<< std::endl;
 				  alpha = csc_gp.phi();
 				  beta = 0.0;
 			  }
@@ -829,7 +834,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
         }// Matched CSCSegment loop
 
-        cout << "Number of pats: " << clctPat.size() << " number of segments: " << range.size() <<  endl;
+        cout << "Mouon pt "<<muon->pt()<<" eta "<< muon->eta()<<" phi "<< muon->phi() <<" Number of pats: " << clctPat.size() << " number of segments: " << range.size() <<  endl;
         if(range.size() > 0) tree->Fill();
     }// Muon loop
 }
@@ -984,6 +989,7 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("segSt",&segSt);
     tree->Branch("segRi",&segRi);
     tree->Branch("segCh",&segCh);
+	tree->Branch("segId",&segId);
     tree->Branch("segeta",&segeta);
     tree->Branch("segphi",&segphi);
     tree->Branch("segx",&segx);
@@ -1004,9 +1010,11 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("lctBend",&lctBend);
     tree->Branch("lcteta",&lcteta);
     tree->Branch("lctphi",&lctphi);
+    tree->Branch("dRSegLCT",&dRSegLCT);
     tree->Branch("lcteta_fit",&lcteta_fit);
     tree->Branch("lctphi_fit",&lctphi_fit);
 
+	/*
     tree->Branch("tflctId",&tflctId);
     tree->Branch("tflctQ",&tflctQ);
     tree->Branch("tflctPat",&tflctPat);
@@ -1027,13 +1035,6 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("alctAc",&alctAc);
     tree->Branch("alctPB",&alctPB);
 
-    tree->Branch("compId",&compId);
-    tree->Branch("compLay",&compLay);
-    tree->Branch("compStr",&compStr);
-    tree->Branch("compHS",&compHS);
-    tree->Branch("compHS",&compphi_fit);
-    tree->Branch("compTimeOn",&compTimeOn);
-
     tree->Branch("wireId",&wireId);
     tree->Branch("wireLay",&wireLay);
     tree->Branch("wireGrp",&wireGrp);
@@ -1043,6 +1044,14 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("stripLay",&stripLay);
     tree->Branch("strip",&strip);
     tree->Branch("stripADCs",&stripADCs);
+	*/
+    tree->Branch("compId",&compId);
+    tree->Branch("compLay",&compLay);
+    tree->Branch("compStr",&compStr);
+    tree->Branch("compHS",&compHS);
+    tree->Branch("compphi_fit",&compphi_fit);
+    tree->Branch("compTimeOn",&compTimeOn);
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

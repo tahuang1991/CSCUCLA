@@ -20,8 +20,10 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing('analysis')
+options.inputFiles = 'out_reco_1.root'
 #options.inputFiles = 'output_l1_reco_2016G_allcollections.root'
-options.inputFiles = 'output_l1_reco_2016G.root'
+#options.inputFiles = 'output_l1_reco_2016G.root'
+#options.inputFiles = '/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/out_reco_1.root'
 #options.inputFiles = '/store/data/Run2016G/ZeroBias/RAW/v1/000/278/986/00000/12104D7A-0065-E611-B62C-FA163E52E986.root'
 options.outputFile = 'evttree.root'
 options.parseArguments()
@@ -37,7 +39,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v12'
 process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v11'
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 #process.options = cms.untracked.PSet( 
 #SkipEvent = cms.untracked.vstring('ProductNotFound') )
 
@@ -93,7 +95,7 @@ process.MakeNtuple = cms.EDAnalyzer("MuonTrackAnalyzer",
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string('evtree.root')
+                                   fileName = cms.string(options.outputFile)
                                    )
 
 #process.p = cms.Path(process.muonCSCDigis * process.csc2DRecHits * process.cscSegments *  process.MakeNtuple)
