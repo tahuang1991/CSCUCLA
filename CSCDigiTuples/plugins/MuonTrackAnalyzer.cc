@@ -409,6 +409,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         ind++;
         os = false;
         ss = false;
+		clear();
         //if( !((inMos && (ind==mu1Ios || ind==mu2Ios)) || (inMss && (ind==mu1Iss || ind==mu2Iss))) ) continue;
         //if(ind==mu1Ios || ind==mu2Ios) os = true;
         //if(ind==mu1Iss || ind==mu2Iss) ss = true;
@@ -484,7 +485,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             bool chDone = false;
             for(vector<int>::iterator chid = ch_serialID.begin(); chid!=ch_serialID.end(); ++chid)
             {
-				//std::cout <<"already looped the chamber "<< *chid <<" current chamber "<< chamber << std::endl;
+				std::cout <<"already looped the chamber "<< *chid <<" current chamber "<< chamber << std::endl;
                 if((*chid) == chamber) chDone = true;
             }
 

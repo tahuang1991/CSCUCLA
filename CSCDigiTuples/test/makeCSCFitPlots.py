@@ -250,7 +250,7 @@ if __name__ == "__main__":
             dRnew = deltaR(segeta[0], segphi[0], lcteta[0], lctphi[0])
         
             #print "j ",j," lctId ",treeHits.lctId[j]," Segid ", segId[0]," dRnew ",dRnew
-            if treeHits.lctId[j] != segId[0] and dRnew <0.1 and dRnew < mindR:
+            if treeHits.lctId[j] == segId[0] and dRnew <0.1 and dRnew < mindR:
               lctindex = j
               mindR = dRnew
             #lcteta_fit[0] = treeHits.lcteta_fit[j]
@@ -263,9 +263,9 @@ if __name__ == "__main__":
             lctPat[0] = treeHits.lctPat[lctindex]
             lctBend[0] = treeHits.lctBend[lctindex]
         
-            if 5 < muonpt[0] < 10:
-              nofit_phiDiff[0] = phi_difference(segphi[0], lctphi[0])
-              fit_phiDiff[0] = phi_difference(segphi[0], lctphi_fit[0])
+            #if 5 < muonpt[0] < 10:
+            nofit_phiDiff[0] = phi_difference(segphi[0], lctphi[0])
+            fit_phiDiff[0] = phi_difference(segphi[0], lctphi_fit[0])
         #dRnew = deltaR(segeta, segphi, lcteta, lctphi)
         
             print "muon pt ",muonpt," Nseg ",Nseg[0], " segeta ",segeta[0]," segphi ",segphi[0], " lcteta ",lcteta[0], " lctphi ",lctphi[0]," lctphi_fit ",lctphi_fit[0] ," dRSegLCT ",dRSegLCT[0]," mindR ",mindR," lctBend ",lctBend[0]," lctPat ",lctPat," nofit_phiDiff ",nofit_phiDiff[0]," fit_phiDiff ",fit_phiDiff[0]
