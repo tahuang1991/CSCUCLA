@@ -36,9 +36,9 @@ def addfiles(ch, dirname="./", ext=".root"):
 def deltaR(eta1, phi1, eta2, phi2):
     dPhi = phi1-phi2
     if dPhi > math.pi:
-	dPhi = dPhi - 2*math.pi
+      dPhi = dPhi - 2*math.pi
     elif dPhi < -math.pi:
-	dPhi = dPhi + 2*math.pi
+      dPhi = dPhi + 2*math.pi
     dEta = eta1-eta2
     #print "dPhi ",dPhi, " dEta ",dEta
     return math.sqrt(dPhi*dPhi + dEta*dEta)
@@ -129,12 +129,18 @@ if __name__ == "__main__":
     segCh = n.zeros(1, dtype=int)
     segId = n.zeros(1, dtype=int)
 
+    lctPat = n.zeros(1, dtype=int)
+    lctBend = n.zeros(1, dtype=int)
+
     lctId = n.zeros(1, dtype=int)
     lcteta = n.zeros(1, dtype=float)
     lctphi = n.zeros(1, dtype=float)
     lcteta_fit = n.zeros(1, dtype=float)
     lctphi_fit = n.zeros(1, dtype=float)
     dRSegLCT = n.zeros(1, dtype=float)
+
+    nofit_phiDiff = n.zeros(1, dtype=float)
+    fit_phiDiff = n.zeros(1, dtype=float)
 
     CSCDigistree.Branch("muonpt",muonpt,"muonpt/D")
     CSCDigistree.Branch("muoneta",muoneta,"muoneta/D")
@@ -150,6 +156,10 @@ if __name__ == "__main__":
     CSCDigistree.Branch("segRi",segRi,"segRi/I")
     CSCDigistree.Branch("segCh",segCh,"segCh/I")
 
+    CSCDigistree.Branch("lctPat", lctPat, "lctPat/I")
+    CSCDigistree.Branch("lctBend", lctBend, "lctBend/I")
+    
+
     CSCDigistree.Branch("lctId",lctId,"lctId/I")
     CSCDigistree.Branch("lcteta",lcteta,"lcteta/D")
     CSCDigistree.Branch("lctphi",lctphi,"lctphi/D")
@@ -157,43 +167,60 @@ if __name__ == "__main__":
     CSCDigistree.Branch("lctphi_fit",lctphi_fit,"lctphi_fit/D")
     CSCDigistree.Branch("dRSegLCT", dRSegLCT,"dRSegLCT/D")
 
+    CSCDigistree.Branch("nofit_phiDiff", nofit_phiDiff, "nofit_phiDiff/D")
+    CSCDigistree.Branch("fit_phiDiff", fit_phiDiff, "fit_phiDiff/D")
+
     h_eventcount = TH1F("h_eventcount","",10,0,10)
     etapartition = [1.2,1.4,1.6,1.8,2.0,2.15]
     nparity = 4
 
     maxEntries = ch.GetEntries()
-    if doTest:
-      maxEntries = 1000000
+    #if doTest:
+    #  maxEntries = 1000000
 
 
     nEvents = maxEntries
     print "nEvents", nEvents
     for k in range(0,nEvents):
       if k%10==0: print "Processing event", k
+      print "nEvents", nEvents, "k = ",k
 
       h_eventcount.Fill(1)
       ch.GetEntry(k)
       treeHits = ch
 
       def initbranches():
-	  #init branches
-	  muonpt[0] = -1
-	  muonphi[0] = 99
-	  muoneta[0] = 99
-	  muonq[0] = 99
-	  Nseg[0] = 0
-	  segEc[0] = 99
-	  segSt[0] = 99
-	  segRi[0] = 99
-	  segCh[0] = 99
-	  segId[0] = 99
-	  segeta[0] = 99
-	  segphi[0] = 99
-	  lcteta[0] = 99
-	  lctphi[0] = 99
-	  lctphi_fit[0] = 99
-	  lcteta_fit[0] = 99
-	  lctId[0] = 99
+	    #init branches
+        muonpt[0] = -1
+        muonphi[0] = 99
+        muoneta[0] = 99
+        muonq[0] = 99
+        Nseg[0] = 0
+        segEc[0] = 99
+        segSt[0] = 99
+        segRi[0] = 99
+        segCh[0] = 99
+        segId[0] = 99
+        segeta[0] = 99
+        segphi[0] = 99
+        lcteta[0] = 99
+        lctphi[0] = 99
+        lctphi_fit[0] = 99
+        lcteta_fit[0] = 99
+        lctId[0] = 99
+        lctPat[0] = 99
+        lctBend[0] = 99
+        nofit_phiDiff[0] = 99
+        fit_phiDiff[0] = 99
+
+      def phi_difference (phi1, phi2):
+        dPhi = phi1-phi2
+        if dPhi > math.pi:
+          dPhi = dPhi - 2*math.pi
+        elif dPhi < -math.pi:
+          dPhi = dPhi + 2*math.pi
+        return dPhi;
+
 
 
       initbranches()
@@ -206,37 +233,43 @@ if __name__ == "__main__":
       muonq[0] = treeHits.q
       Nseg[0] = treeHits.Nseg
       for i in range(0,Nseg):
-	  segEc[0] = treeHits.segEc[i]
-	  segSt[0] = treeHits.segSt[i]
-	  segRi[0] = treeHits.segRi[i]
-	  segCh[0] = treeHits.segCh[i]
-	  segId[0] = treeHits.segId[i]
-	  segeta[0] = treeHits.segeta[i]
-	  segphi[0] = treeHits.segphi[i]
-	  dRnew = 99
-	  mindR = 99
-	  lctindex = 99
-	  #to Find matched LCT
-	  for j in range(0, len(list(treeHits.lcteta))):
-	      lcteta[0] = treeHits.lcteta[j]
-	      lctphi[0] = treeHits.lctphi[j]
-	      dRnew = deltaR(segeta[0], segphi[0], lcteta[0], lctphi[0])
-
-	      #print "j ",j," lctId ",treeHits.lctId[j]," Segid ", segId[0]," dRnew ",dRnew
-	      if treeHits.lctId[j] != segId[0] and dRnew <0.1 and dRnew < mindR:
-		lctindex = j
-		mindR = dRnew
-	      #lcteta_fit[0] = treeHits.lcteta_fit[j]
-	  if lctindex != 99:
-	      lcteta[0] = treeHits.lcteta[lctindex]
-	      lctphi[0] = treeHits.lctphi[lctindex]
-	      lctphi_fit[0] = treeHits.lctphi_fit[lctindex]
-	      lctId[0] = treeHits.lctId[lctindex]
-	      dRSegLCT[0] = treeHits.dRSegLCT[lctindex]
-	  #dRnew = deltaR(segeta, segphi, lcteta, lctphi)
-	  
-	      print "muon pt ",muonpt," Nseg ",Nseg[0], " segeta ",segeta[0]," segphi ",segphi[0], " lcteta ",lcteta[0], " lctphi ",lctphi[0]," lctphi_fit ",lctphi_fit[0] ," dRSegLCT ",dRSegLCT[0]," mindR ",mindR
-	      CSCDigistree.Fill()
+        segEc[0] = treeHits.segEc[i]
+        segSt[0] = treeHits.segSt[i]
+        segRi[0] = treeHits.segRi[i]
+        segCh[0] = treeHits.segCh[i]
+        segId[0] = treeHits.segId[i]
+        segeta[0] = treeHits.segeta[i]
+        segphi[0] = treeHits.segphi[i]
+        dRnew = 99
+        mindR = 99
+        lctindex = 99
+        #to Find matched LCT
+        for j in range(0, len(list(treeHits.lcteta))):
+            lcteta[0] = treeHits.lcteta[j]
+            lctphi[0] = treeHits.lctphi[j]
+            dRnew = deltaR(segeta[0], segphi[0], lcteta[0], lctphi[0])
+        
+            #print "j ",j," lctId ",treeHits.lctId[j]," Segid ", segId[0]," dRnew ",dRnew
+            if treeHits.lctId[j] != segId[0] and dRnew <0.1 and dRnew < mindR:
+              lctindex = j
+              mindR = dRnew
+            #lcteta_fit[0] = treeHits.lcteta_fit[j]
+        if lctindex != 99:
+            lcteta[0] = treeHits.lcteta[lctindex]
+            lctphi[0] = treeHits.lctphi[lctindex]
+            lctphi_fit[0] = treeHits.lctphi_fit[lctindex]
+            lctId[0] = treeHits.lctId[lctindex]
+            dRSegLCT[0] = treeHits.dRSegLCT[lctindex]
+            lctPat[0] = treeHits.lctPat[lctindex]
+            lctBend[0] = treeHits.lctBend[lctindex]
+        
+            if 5 < muonpt[0] < 10:
+              nofit_phiDiff[0] = phi_difference(segphi[0], lctphi[0])
+              fit_phiDiff[0] = phi_difference(segphi[0], lctphi_fit[0])
+        #dRnew = deltaR(segeta, segphi, lcteta, lctphi)
+        
+            print "muon pt ",muonpt," Nseg ",Nseg[0], " segeta ",segeta[0]," segphi ",segphi[0], " lcteta ",lcteta[0], " lctphi ",lctphi[0]," lctphi_fit ",lctphi_fit[0] ," dRSegLCT ",dRSegLCT[0]," mindR ",mindR," lctBend ",lctBend[0]," lctPat ",lctPat," nofit_phiDiff ",nofit_phiDiff[0]," fit_phiDiff ",fit_phiDiff[0]
+            CSCDigistree.Fill()
 
 
 
