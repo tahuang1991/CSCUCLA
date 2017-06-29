@@ -39,7 +39,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v12'
 process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v11'
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.options = cms.untracked.PSet( 
 #SkipEvent = cms.untracked.vstring('ProductNotFound') )
 
