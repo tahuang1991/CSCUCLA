@@ -73,19 +73,19 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         int chamberSerial( CSCDetId id );
         double FindAnodeTime(std::vector<CSCRecHit2D>::const_iterator  hiti,  const edm::Handle<CSCWireDigiCollection> cscWireDigi, double local_t0);
 
-		void clear();
+	void clear();
 	//vector<> matchL1MuontoRecoMuon(CSCCorrelatedLCTDigi lct, CSCComparatorDigiCollection compdigis, );
-	//CSCCorrelatedLCTDigi matchLCTsToCSCSegment(CSCSegment segment, CSCCorrelatedLCTDigiCollection lcts);
-		int getHalfStrip(const CSCComparatorDigi& digi);
-		float getFractionalStrip(const CSCComparatorDigi&d);
-		float cscHalfStripWidth(CSCDetId id);
-		GlobalPoint getCSCCorrelatedLCTDigiPoint(unsigned int rawId, const CSCCorrelatedLCTDigi& lct) const;
+	//csccorrelatedLCTDigi matchLCTsToCSCSegment(CSCSegment segment, CSCCorrelatedLCTDigiCollection lcts);
+	int getHalfStrip(const CSCComparatorDigi& digi);
+	float getFractionalStrip(const CSCComparatorDigi&d);
+	float cscHalfStripWidth(CSCDetId id);
+	GlobalPoint getCSCCorrelatedLCTDigiPoint(unsigned int rawId, const CSCCorrelatedLCTDigi& lct) const;
 
     private:
 
         edm::EDGetTokenT<reco::MuonCollection> mc_token;
-		edm::EDGetTokenT< BXVector<l1t::Muon> > l1mu_token;
-		edm::EDGetTokenT<l1t::EMTFTrackCollection> emtf_token;
+	edm::EDGetTokenT< BXVector<l1t::Muon> > l1mu_token;
+	edm::EDGetTokenT<l1t::EMTFTrackCollection> emtf_token;
         edm::EDGetTokenT<CSCSegmentCollection> allSegmentsCSCToken;
         edm::EDGetTokenT<CSCWireDigiCollection> wd_token;
         edm::EDGetTokenT<CSCStripDigiCollection> sd_token;
@@ -103,7 +103,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         double minPt;
         edm::InputTag CSCSegmentTags_;
 
-		float dR_seg_lct_;
+	float dR_seg_lct_;
 
      
         int evN;
@@ -113,9 +113,9 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         int Event_LumiSection;
         int Event_BXCrossing;
 
-		float beamspotx;
-		float beamspoty;
-		float beamspotz;
+	float beamspotx;
+	float beamspoty;
+	float beamspotz;
 
         //reco muon
         bool ss;
@@ -136,11 +136,11 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         vector<int> segRi;
         vector<int> segCh;
         vector<int> segId;
-		vector<float> segeta;
-		vector<float> segphi;
-		vector<float> segx;
-		vector<float> segy;
-		vector<float> segz;
+	vector<float> segeta;
+	vector<float> segphi;
+	vector<float> segx;
+	vector<float> segy;
+	vector<float> segz;
 
         //RecHit data
         vector<int> rhId;
@@ -158,7 +158,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         vector<int> lctBend;
         vector<float> lcteta;
         vector<float> lctphi;
-		vector<float> dRSegLCT;
+	vector<float> dRSegLCT;
         vector<float> lcteta_fit;
         vector<float> lctphi_fit;
         //vector<vector<int>> lctQ;
@@ -181,18 +181,18 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
 
         //CLCT data
         vector<int> clctId;
-        vector<vector<int>> clctQ;
-        vector<vector<int>> clctPat;
-        vector<vector<int>> clctKHS;
-        vector<vector<int>> clctCFEB;
-        vector<vector<int>> clctBend;
+        vector<int> clctQ;
+        vector<int> clctPat;
+        vector<int> clctKHS;
+        vector<int> clctCFEB;
+        vector<int> clctBend;
 
         //ALCT data
         vector<int> alctId;
-        vector<vector<int>> alctQ;
-        vector<vector<int>> alctKWG;
-        vector<vector<int>> alctAc;
-        vector<vector<int>> alctPB;
+        vector<int> alctQ;
+        vector<int> alctKWG;
+        vector<int> alctAc;
+        vector<int> alctPB;
 
         //Comparator data
         vector<int> compId;
@@ -200,20 +200,20 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         vector<vector<int>> compLay;
         vector<vector<int>> compStr;
         vector<vector<int>> compHS;
-        vector<vector<vector<int>>> compTimeOn;
+        vector<vector<int>> compTimeOn;
         vector<vector<float>> compphi_fit;
 
         //Wire Data
         vector<int> wireId;
-        vector<int> wireLay;
+        vector<vector<int>> wireLay;
         vector<vector<int>> wireGrp;
-        vector<vector<vector<int> > > wireTimeOn;
+        vector<vector<int> > wireTimeOn;
 
         //Strip Data
         vector<int> stripId;
-        vector<int> stripLay;
+        vector<vector<int>> stripLay;
         vector<vector<int>> strip;
-        vector<vector<vector<int>>> stripADCs;
+        vector<vector<int>> stripADCs;
 
         // double anodeTime;
         //    double stripTime;
@@ -245,7 +245,7 @@ class MuonTrackAnalyzer : public edm::EDAnalyzer {
         TH1F * Nmuon_h;
         TH1F * chambernumber;
         //TFile *file;
-		edm::Service< TFileService > fs;
+	edm::Service< TFileService > fs;
 
 };
 

@@ -175,7 +175,7 @@ MuonTrackAnalyzer::clear(){
         lctBend.clear();
         lcteta.clear();
         lctphi.clear();
-		dRSegLCT.clear();
+	dRSegLCT.clear();
         lcteta_fit.clear();
         lctphi_fit.clear();
 
@@ -326,8 +326,8 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		
        // ptsamuon->Fill(muon->standAloneMuon()->pt());
     }
-
-	std::cout <<"number of muons "<< Nmuon << " standalone muons "<< N_SAmuon << std::endl;
+     
+    std::cout <<"number of muons "<< Nmuon << " standalone muons "<< N_SAmuon << std::endl;
     //Nmuon_h->Fill(Nmuon);
 	/*
     int mu1Ios = -9;
@@ -402,7 +402,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	*/
 
     int ind = -1;
-	vector<int> ch_serialID;
+    vector<int> ch_serialID;
     //Loop over muons applying the selection used for the timing analysis
     for (reco::MuonCollection::const_iterator muon = muons->begin(); muon!= muons->end(); muon++) 
     {
@@ -444,12 +444,12 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             segSt.push_back(chamberId.station());
             segRi.push_back(chamberId.ring());
             segCh.push_back(chamberId.chamber());
-			segId.push_back(chamber);
-			std::cout <<"matched CSSegment "<< *(*rechit) << std::endl;
-			GlobalPoint seggp = theCSC->idToDet((*rechit)->cscDetId())->surface().toGlobal((*rechit)->localPosition());
-			segeta.push_back(seggp.eta());
-			segphi.push_back(seggp.phi());
-			std::cout <<"segment eta "<< seggp.eta() <<" phi "<< seggp.phi() << std::endl;
+            segId.push_back(chamber);
+	    std::cout <<"matched CSSegment "<< *(*rechit) << std::endl;
+            GlobalPoint seggp = theCSC->idToDet((*rechit)->cscDetId())->surface().toGlobal((*rechit)->localPosition());
+	    segeta.push_back(seggp.eta());
+	    segphi.push_back(seggp.phi());
+	    std::cout <<"segment eta "<< seggp.eta() <<" phi "<< seggp.phi() << std::endl;
 			
 
 
@@ -458,7 +458,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             {
                 DetId idd = (hiti)->geographicalId();
                 CSCDetId hitID(idd.rawId());
-				std::cout <<"\t recHits "<< *hiti << std::endl;
+		std::cout <<"\t recHits "<< *hiti << std::endl;
                 //int nStr = hiti->nStrips();
                 //int nWireG = hiti->nWireGroups();
                 int idBuf = chamberSerial(hitID);
@@ -485,7 +485,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             bool chDone = false;
             for(vector<int>::iterator chid = ch_serialID.begin(); chid!=ch_serialID.end(); ++chid)
             {
-				std::cout <<"already looped the chamber "<< *chid <<" current chamber "<< chamber << std::endl;
+		std::cout <<"already looped the chamber "<< *chid <<" current chamber "<< chamber << std::endl;
                 if((*chid) == chamber) chDone = true;
             }
 
@@ -493,15 +493,15 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             ch_serialID.push_back(chamber);
             //chambernumber->Fill(chamber);
 
-			bool foundLCT = false;
-			float mindR = 99.0;
-			GlobalPoint gpLCT;
-			CSCCorrelatedLCTDigi matchedLCT; 
+	    bool foundLCT = false;
+	    float mindR = 99.0;
+	    GlobalPoint gpLCT;
+	    CSCCorrelatedLCTDigi matchedLCT; 
             // Extract LCT for all strips in this chamber
             for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator lctDigi_id=cscLCTDigi->begin(); lctDigi_id!=cscLCTDigi->end(); lctDigi_id++)
             {
                 CSCDetId lctID = (*lctDigi_id).first;
-				std::cout <<"to match LCT CSCid "<<  lctID << std::endl;
+		std::cout <<"to match LCT CSCid "<<  lctID << std::endl;
                 int idBuf = chamberSerial(lctID);
                 if(idBuf != chamber) continue;
 
@@ -514,17 +514,17 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 const CSCCorrelatedLCTDigiCollection::Range& range =(*lctDigi_id).second;
                 for(CSCCorrelatedLCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
                 {
-					GlobalPoint gptmp = getCSCCorrelatedLCTDigiPoint(lctID.rawId(), *digiItr);
-					float dR = reco::deltaR(seggp.eta(), seggp.phi(), gptmp.eta(), gptmp.phi());
-					if (dR > dR_seg_lct_) continue;
+			GlobalPoint gptmp = getCSCCorrelatedLCTDigiPoint(lctID.rawId(), *digiItr);
+			float dR = reco::deltaR(seggp.eta(), seggp.phi(), gptmp.eta(), gptmp.phi());
+			if (dR > dR_seg_lct_) continue;
 
-					if (dR < mindR){
-						matchedLCT = *digiItr;
-						mindR = dR;
-						foundLCT = true;
-						gpLCT = gptmp;
-						std::cout <<"Found matched LCT " <<  *digiItr <<" eta "<< gpLCT.eta()<<" phi "<< gpLCT.phi() << std::endl;
-					}
+			if (dR < mindR){
+				matchedLCT = *digiItr;
+				mindR = dR;
+				foundLCT = true;
+				gpLCT = gptmp;
+				std::cout <<"Found matched LCT " <<  *digiItr <<" eta "<< gpLCT.eta()<<" phi "<< gpLCT.phi() << std::endl;
+			}
                     //lctQBuf.push_back((*digiItr).getQuality());
                     //lctPatBuf.push_back((*digiItr).getPattern());
                     //lctKWGBuf.push_back((*digiItr).getKeyWG());
@@ -540,18 +540,19 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 //lctBend.push_back(lctBendBuf);
             }
 
-			if (foundLCT){//fill LCT info 
-				lctId.push_back(chamber);
-				lctQ.push_back(matchedLCT.getQuality());
-				lctPat.push_back(matchedLCT.getPattern());
-				lctKWG.push_back(matchedLCT.getKeyWG());
-				lctKHS.push_back(matchedLCT.getStrip());
-				lctBend.push_back(matchedLCT.getBend());
-				lcteta.push_back(gpLCT.eta());
-				lctphi.push_back(gpLCT.phi());
-				dRSegLCT.push_back(mindR);
+	    if (foundLCT){//fill LCT info 
+	    	lctId.push_back(chamber);
+	    	lctQ.push_back(matchedLCT.getQuality());
+	    	lctPat.push_back(matchedLCT.getPattern());
+	    	lctKWG.push_back(matchedLCT.getKeyWG());
+	    	lctKHS.push_back(matchedLCT.getStrip());
+	    	lctBend.push_back(matchedLCT.getBend());
+	    	lcteta.push_back(gpLCT.eta());
+	    	lctphi.push_back(gpLCT.phi());
+	    	dRSegLCT.push_back(mindR);
 
-			}
+	    }else //skip this CSC segment 
+		continue;
 
 			/*
             //Extact tfLCTs in this event
@@ -582,65 +583,93 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 tflctKWG.push_back(tflctKWGBuf);
                 tflctKHS.push_back(tflctKHSBuf);
                 tflctBend.push_back(tflctBendBuf);
-            }
+            }*/
 
             // Extract CLCT for all strips in this chamber
+	    CSCCLCTDigi matchedCLCT;
+	    bool foundCLCT =false;;
             for (CSCCLCTDigiCollection::DigiRangeIterator clctDigi_id=cscCLCTDigi->begin(); clctDigi_id!=cscCLCTDigi->end(); clctDigi_id++)
             {
                 CSCDetId clctID = (*clctDigi_id).first;
                 int idBuf = chamberSerial(clctID);
                 if(idBuf != chamber) continue;
-                clctId.push_back(idBuf);
 
-                vector<int> clctQBuf;
-                vector<int> clctPatBuf;
-                vector<int> clctKHSBuf;
-                vector<int> clctCFEBBuf;
-                vector<int> clctBendBuf;
+                //vector<int> clctQBuf;
+                //vector<int> clctPatBuf;
+                //vector<int> clctKHSBuf;
+                //vector<int> clctCFEBBuf;
+                //vector<int> clctBendBuf;
 
                 const CSCCLCTDigiCollection::Range& range =(*clctDigi_id).second;
                 for(CSCCLCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
                 {
-                    clctQBuf.push_back((*digiItr).getQuality());
-                    clctPatBuf.push_back((*digiItr).getPattern());
-                    clctKHSBuf.push_back((*digiItr).getStrip());
-                    clctCFEBBuf.push_back((*digiItr).getCFEB());
-                    clctBendBuf.push_back((*digiItr).getBend());
+		    if ((*digiItr).getKeyStrip() ==  matchedLCT.getStrip()){
+			matchedCLCT = (*digiItr);
+			foundCLCT = true;
+		    }
+                    //clctQBuf.push_back((*digiItr).getQuality());
+                    //clctPatBuf.push_back((*digiItr).getPattern());
+                    //clctKHSBuf.push_back((*digiItr).getStrip());
+                    //clctCFEBBuf.push_back((*digiItr).getCFEB());
+                    //clctBendBuf.push_back((*digiItr).getBend());
                 }
-                clctQ.push_back(clctQBuf);
-                clctPat.push_back(clctPatBuf);
-                clctKHS.push_back(clctKHSBuf);
-                clctCFEB.push_back(clctCFEBBuf);
-                clctBend.push_back(clctBendBuf);
+                //clctQ.push_back(clctQBuf);
+                //clctPat.push_back(clctPatBuf);
+                //clctKHS.push_back(clctKHSBuf);
+                //clctCFEB.push_back(clctCFEBBuf);
+                //clctBend.push_back(clctBendBuf);
             }
+	    if (foundCLCT){
+                clctId.push_back(chamber);
+		clctQ.push_back(matchedCLCT.getQuality());
+                clctPat.push_back(matchedCLCT.getPattern());
+                clctKHS.push_back(matchedCLCT.getKeyStrip());
+                clctCFEB.push_back(matchedCLCT.getCFEB());
+                clctBend.push_back(matchedCLCT.getBend());
+	    }
+
 
             // Extract ALCT for all strips in this chamber
+	    CSCALCTDigi matchedALCT;
+	    bool foundALCT = false;
             for (CSCALCTDigiCollection::DigiRangeIterator alctDigi_id=cscALCTDigi->begin(); alctDigi_id!=cscALCTDigi->end(); alctDigi_id++)
             {
                 CSCDetId alctID = (*alctDigi_id).first;
                 int idBuf = chamberSerial(alctID);
                 if(idBuf != chamber) continue;
-                alctId.push_back(idBuf);
+                //alctId.push_back(idBuf);
 
-                vector<int> alctQBuf;
-                vector<int> alctKWGBuf;
-                vector<int> alctAcBuf;
-                vector<int> alctPBBuf;
+                //vector<int> alctQBuf;
+                //vector<int> alctKWGBuf;
+                //vector<int> alctAcBuf;
+                //vector<int> alctPBBuf;
 
                 const CSCALCTDigiCollection::Range& range =(*alctDigi_id).second;
                 for(CSCALCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
                 {
-                    alctQBuf.push_back((*digiItr).getQuality());
-                    alctKWGBuf.push_back((*digiItr).getKeyWG());
-                    alctAcBuf.push_back((*digiItr).getAccelerator());
-                    alctPBBuf.push_back((*digiItr).getCollisionB());
+		    if ((*digiItr).getKeyWG() ==  matchedLCT.getKeyWG()){
+			matchedALCT = (*digiItr);
+			foundALCT = true;
+		    }
+                    //alctQBuf.push_back((*digiItr).getQuality());
+                    //alctKWGBuf.push_back((*digiItr).getKeyWG());
+                    //alctAcBuf.push_back((*digiItr).getAccelerator());
+                    //alctPBBuf.push_back((*digiItr).getCollisionB());
                 }
-                alctQ.push_back(alctQBuf);
-                alctKWG.push_back(alctKWGBuf);
-                alctAc.push_back(alctAcBuf);
-                alctPB.push_back(alctPBBuf);
+                //alctQ.push_back(alctQBuf);
+                //alctKWG.push_back(alctKWGBuf);
+                //alctAc.push_back(alctAcBuf);
+                //alctPB.push_back(alctPBBuf);
             }
+	    if (foundALCT){
+		alctId.push_back(chamber);
+                alctQ.push_back(matchedALCT.getQuality());
+                alctKWG.push_back(matchedALCT.getKeyWG());
+                alctAc.push_back(matchedALCT.getAccelerator());
+                alctPB.push_back(matchedALCT.getCollisionB());
+	    }
 
+	    /*
             // Extract Comparator Data
             for (CSCComparatorDigiCollection::DigiRangeIterator compDigi_id=compDigi->begin(); compDigi_id!=compDigi->end(); compDigi_id++)
             {
@@ -711,125 +740,126 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 stripADCs.push_back(stripADCBuf);
 
             }*/
-		if (foundLCT){
-			  // fetch the CSC comparator digis in this chamber
-			  CSCComparatorDigiContainerIds compDigisIds;
-			  
-			  for (int iLayer=1; iLayer<=6; ++iLayer){
-				CSCDetId layerId(chamberId.endcap(), chamberId.station(), chamberId.ring(), chamberId.chamber(), iLayer);
-				// get the digis per layer
-				auto compRange = compDigi->get(layerId);
-				CSCComparatorDigiContainer compDigisLCT;
-				for (auto compDigiItr = compRange.first; compDigiItr != compRange.second; compDigiItr++) {
-				  auto compDigi = *compDigiItr;
-				  //if (stub.getTimeBin() < 4 or stub.getTimeBin() > 8) continue;
-				  int stubHalfStrip(getHalfStrip(compDigi));
-				  // these comparator digis never fit the pattern anyway!
-				  if (std::abs(stubHalfStrip - matchedLCT.getStrip())>5) continue;
-				  // check if this comparator digi fits the pattern
-				  //if(verbose) std::cout << "Comparator digi L1Mu " << layerId << " " << compDigi << " HS " << stubHalfStrip << " stubKeyHS " << stub.getStrip() << std::endl;
-				  if (comparatorInLCTPattern(matchedLCT.getStrip(), matchedLCT.getPattern(), iLayer, stubHalfStrip)) {
-					//if(verbose) std::cout<<"\tACCEPT"<<std::endl;
-					compDigisLCT.push_back(compDigi);
-				  }
-				  // else{
-				  //   if(verbose) std::cout<<"\tDECLINE!"<<std::endl;
-				  // }
-				}
-				// if(verbose) if (compDigis.size() > 2) std::cout << ">>> INFO: " << compDigis.size() << " matched comp digis in this layer!" << std::endl;
-				compDigisIds.push_back(std::make_pair(layerId, compDigisLCT));
+
+	    if (foundLCT){
+		  // fetch the CSC comparator digis in this chamber
+		  CSCComparatorDigiContainerIds compDigisIds;
+		  
+		  for (int iLayer=1; iLayer<=6; ++iLayer){
+			CSCDetId layerId(chamberId.endcap(), chamberId.station(), chamberId.ring(), chamberId.chamber(), iLayer);
+			// get the digis per layer
+			auto compRange = compDigi->get(layerId);
+			CSCComparatorDigiContainer compDigisLCT;
+			for (auto compDigiItr = compRange.first; compDigiItr != compRange.second; compDigiItr++) {
+			  auto compDigi = *compDigiItr;
+			  //if (stub.getTimeBin() < 4 or stub.getTimeBin() > 8) continue;
+			  int stubHalfStrip(getHalfStrip(compDigi));
+			  // these comparator digis never fit the pattern anyway!
+			  if (std::abs(stubHalfStrip - matchedLCT.getStrip())>5) continue;
+			  // check if this comparator digi fits the pattern
+			  //if(verbose) std::cout << "Comparator digi L1Mu " << layerId << " " << compDigi << " HS " << stubHalfStrip << " stubKeyHS " << stub.getStrip() << std::endl;
+			  if (comparatorInLCTPattern(matchedLCT.getStrip(), matchedLCT.getPattern(), iLayer, stubHalfStrip)) {
+				//if(verbose) std::cout<<"\tACCEPT"<<std::endl;
+				compDigisLCT.push_back(compDigi);
 			  }
+			  // else{
+			  //   if(verbose) std::cout<<"\tDECLINE!"<<std::endl;
+			  // }
+			}
+			// if(verbose) if (compDigis.size() > 2) std::cout << ">>> INFO: " << compDigis.size() << " matched comp digis in this layer!" << std::endl;
+			compDigisIds.push_back(std::make_pair(layerId, compDigisLCT));
+		  }
 
-			  //add a fitting module to fit comparator digis
-			  // get the z and phi positions
-			  auto cscChamber = theCSC->chamber(chamberId);
-			  float perp = 0.0;
-			  std::vector<float> phis;
-			  std::vector<float> zs;
-			  std::vector<float> ephis;
-			  std::vector<float> ezs;
-			  std::vector<float> status;
-			  for (auto p: compDigisIds){
-				auto detId = p.first;
-				float phi_tmp = 0.0;
-				float perp_tmp = 0.0;
-				float z_tmp = 0.0;
-				if (p.second.size()==0) continue;
-				for (auto hit: p.second){
-				  float fractional_strip = getFractionalStrip(hit);
-				  auto layer_geo = cscChamber->layer(detId.layer())->geometry();
-				  float wire = layer_geo->middleWireOfGroup(matchedLCT.getKeyWG() + 1);
-				  LocalPoint csc_intersect = layer_geo->intersectionOfStripAndWire(fractional_strip, wire);
-				  GlobalPoint csc_gp = theCSC->idToDet(detId)->surface().toGlobal(csc_intersect);
-				  float gpphi = csc_gp.phi();
-
-				  if (phis.size()>0 and gpphi>0 and phis[0]<0 and  (gpphi-phis[0])>3.1416)
-					phi_tmp += (gpphi-2*3.1415926);
-				  else if (phis.size()>0 and gpphi<0 and phis[0]>0 and (gpphi-phis[0])<-3.1416)
-					phi_tmp += (gpphi+2*3.1415926);
-				  else
-					phi_tmp += (csc_gp.phi());
-
-				  z_tmp = csc_gp.z();
-				  perp_tmp += csc_gp.perp();
-				}
-				//in case there are more than one comparator digis in one layer
-				//take the average position 
-				perp_tmp = perp_tmp/(p.second).size();
-				phi_tmp = phi_tmp/(p.second).size();
-				std::cout <<"detid "<< detId <<" perp "<< perp_tmp <<" phi "<< phi_tmp <<" z "<< z_tmp << std::endl;
-				perp += perp_tmp;
-				phis.push_back(phi_tmp);
-				zs.push_back(z_tmp);
-				ezs.push_back(0);
-				// phis.push_back(csc_gp.phi());
-				ephis.push_back(cscHalfStripWidth(detId)/sqrt(12));
-			  }
-
-
-			  CSCDetId key_id(chamberId.endcap(), chamberId.station(), chamberId.ring(), chamberId.chamber(), CSCConstants::KEY_CLCT_LAYER);
-			  float fractional_strip = 0.5 * (matchedLCT.getStrip() + 1) - 0.25;
-			  auto layer_geo = cscChamber->layer(CSCConstants::KEY_CLCT_LAYER)->geometry();
-			  // LCT::getKeyWG() also starts from 0
+		  //add a fitting module to fit comparator digis
+		  // get the z and phi positions
+		  auto cscChamber = theCSC->chamber(chamberId);
+		  float perp = 0.0;
+		  std::vector<float> phis;
+		  std::vector<float> zs;
+		  std::vector<float> ephis;
+		  std::vector<float> ezs;
+		  std::vector<float> status;
+		  for (auto p: compDigisIds){
+			auto detId = p.first;
+			float phi_tmp = 0.0;
+			float perp_tmp = 0.0;
+			float z_tmp = 0.0;
+			if (p.second.size()==0) continue;
+			for (auto hit: p.second){
+			  float fractional_strip = getFractionalStrip(hit);
+			  auto layer_geo = cscChamber->layer(detId.layer())->geometry();
 			  float wire = layer_geo->middleWireOfGroup(matchedLCT.getKeyWG() + 1);
 			  LocalPoint csc_intersect = layer_geo->intersectionOfStripAndWire(fractional_strip, wire);
-			  GlobalPoint csc_gp = theCSC->idToDet(key_id)->surface().toGlobal(csc_intersect);
-			  perp = csc_gp.perp();
-			  //float stripPhiPitch = layer_geo->stripPhiPitch();
+			  GlobalPoint csc_gp = theCSC->idToDet(detId)->surface().toGlobal(csc_intersect);
+			  float gpphi = csc_gp.phi();
+
+			  if (phis.size()>0 and gpphi>0 and phis[0]<0 and  (gpphi-phis[0])>3.1416)
+				phi_tmp += (gpphi-2*3.1415926);
+			  else if (phis.size()>0 and gpphi<0 and phis[0]>0 and (gpphi-phis[0])<-3.1416)
+				phi_tmp += (gpphi+2*3.1415926);
+			  else
+				phi_tmp += (csc_gp.phi());
+
+			  z_tmp = csc_gp.z();
+			  perp_tmp += csc_gp.perp();
+			}
+			//in case there are more than one comparator digis in one layer
+			//take the average position 
+			perp_tmp = perp_tmp/(p.second).size();
+			phi_tmp = phi_tmp/(p.second).size();
+			std::cout <<"detid "<< detId <<" perp "<< perp_tmp <<" phi "<< phi_tmp <<" z "<< z_tmp << std::endl;
+			perp += perp_tmp;
+			phis.push_back(phi_tmp);
+			zs.push_back(z_tmp);
+			ezs.push_back(0);
+			// phis.push_back(csc_gp.phi());
+			ephis.push_back(cscHalfStripWidth(detId)/sqrt(12));
+		  }
+
+
+		  CSCDetId key_id(chamberId.endcap(), chamberId.station(), chamberId.ring(), chamberId.chamber(), CSCConstants::KEY_CLCT_LAYER);
+		  float fractional_strip = 0.5 * (matchedLCT.getStrip() + 1) - 0.25;
+		  auto layer_geo = cscChamber->layer(CSCConstants::KEY_CLCT_LAYER)->geometry();
+		  // LCT::getKeyWG() also starts from 0
+		  float wire = layer_geo->middleWireOfGroup(matchedLCT.getKeyWG() + 1);
+		  LocalPoint csc_intersect = layer_geo->intersectionOfStripAndWire(fractional_strip, wire);
+		  GlobalPoint csc_gp = theCSC->idToDet(key_id)->surface().toGlobal(csc_intersect);
+		  perp = csc_gp.perp();
+		  //float stripPhiPitch = layer_geo->stripPhiPitch();
+		  //if (stripBits > 0)
+		 //  stripPhiPitch = stripPhiPitch/stripBits;
+
+		  // use average perp
+		  //perp = perp/phis.size();
+		  // do a fit to the comparator digis
+		  float alpha = -99., beta = 0.;
+		  float fit_z_layers[6] = {0.,0.,0.,0.,0.,0.};
+		  float fit_phi_layers[6] = {0.,0.,0.,0.,0.,0.};
+		  PtassignmentHelper::calculateAlphaBeta(zs, phis, ezs, ephis, status, alpha, beta);
+		  if (phis.size() <= 2 or fabs(alpha)>=99){
+			  std::cout <<"warning, falied to fit comparator digis,num of digis: "<< phis.size()<<" alpha "<< alpha <<" beta "<< beta <<" just LCT position as fitting position"<< std::endl;
+			  alpha = csc_gp.phi();
+			  beta = 0.0;
+		  }
+			  std::cout <<"fitting results: alpha "<< alpha <<" beta "<< beta << std::endl;
+		  vector<float> phifitbuf;
+		  for (int i=0; i<6; i++){
+			  fit_z_layers[i] = cscChamber->layer(i+1)->centerOfStrip(20).z();
+			  fit_phi_layers[i] = PtassignmentHelper::normalizePhi(alpha + beta * fit_z_layers[i]);
+			  phifitbuf.push_back(fit_phi_layers[i]);
+			  if (i == CSCConstants::KEY_CLCT_LAYER){
+				  //lcteta.push_back(gpLCT.eta());
+				  lctphi_fit.push_back(fit_phi_layers[i] );
+
+			  }
 			  //if (stripBits > 0)
-			 //  stripPhiPitch = stripPhiPitch/stripBits;
+				//fit_phi_layers[i] = (std::floor(fit_phi_layers[i]/stripPhiPitch) + 0.5)*stripPhiPitch;
+			  //if (verbose_>0)
+				std::cout <<"i "<< i <<" fit_z "<< fit_z_layers[i]<< " fit_phi "<< fit_phi_layers[i]<<" perp "<< perp << std::endl;
+		  }
+		  compphi_fit.push_back(phifitbuf);
 
-			  // use average perp
-			  //perp = perp/phis.size();
-			  // do a fit to the comparator digis
-			  float alpha = -99., beta = 0.;
-			  float fit_z_layers[6] = {0.,0.,0.,0.,0.,0.};
-			  float fit_phi_layers[6] = {0.,0.,0.,0.,0.,0.};
-			  PtassignmentHelper::calculateAlphaBeta(zs, phis, ezs, ephis, status, alpha, beta);
-			  if (phis.size() <= 2 or fabs(alpha)>=99){
-				  std::cout <<"warning, falied to fit comparator digis,num of digis: "<< phis.size()<<" alpha "<< alpha <<" beta "<< beta <<" just LCT position as fitting position"<< std::endl;
-				  alpha = csc_gp.phi();
-				  beta = 0.0;
-			  }
-				  std::cout <<"fitting results: alpha "<< alpha <<" beta "<< beta << std::endl;
-			  vector<float> phifitbuf;
-			  for (int i=0; i<6; i++){
-				  fit_z_layers[i] = cscChamber->layer(i+1)->centerOfStrip(20).z();
-				  fit_phi_layers[i] = PtassignmentHelper::normalizePhi(alpha + beta * fit_z_layers[i]);
-				  phifitbuf.push_back(fit_phi_layers[i]);
-				  if (i == CSCConstants::KEY_CLCT_LAYER){
-					  //lcteta.push_back(gpLCT.eta());
-					  lctphi_fit.push_back(fit_phi_layers[i] );
-
-				  }
-				  //if (stripBits > 0)
-					//fit_phi_layers[i] = (std::floor(fit_phi_layers[i]/stripPhiPitch) + 0.5)*stripPhiPitch;
-				  //if (verbose_>0)
-					std::cout <<"i "<< i <<" fit_z "<< fit_z_layers[i]<< " fit_phi "<< fit_phi_layers[i]<<" perp "<< perp << std::endl;
-			  }
-			  compphi_fit.push_back(phifitbuf);
-
-			}//foundLCT
+		}//foundLCT
 
 
 
@@ -1022,6 +1052,7 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("tflctKWG",&tflctKWG);
     tree->Branch("tflctKHS",&tflctKHS);
     tree->Branch("tflctBend",&tflctBend);
+    */
 
     tree->Branch("clctId",&clctId);
     tree->Branch("clctQ",&clctQ);
@@ -1045,7 +1076,7 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("stripLay",&stripLay);
     tree->Branch("strip",&strip);
     tree->Branch("stripADCs",&stripADCs);
-	*/
+
     tree->Branch("compId",&compId);
     tree->Branch("compLay",&compLay);
     tree->Branch("compStr",&compStr);
