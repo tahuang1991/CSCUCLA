@@ -541,6 +541,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             }
 
 	    if (foundLCT){//fill LCT info 
+		cout <<"matchedLCT "<< matchedLCT << endl;
 	    	lctId.push_back(chamber);
 	    	lctQ.push_back(matchedLCT.getQuality());
 	    	lctPat.push_back(matchedLCT.getPattern());
@@ -603,6 +604,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 const CSCCLCTDigiCollection::Range& range =(*clctDigi_id).second;
                 for(CSCCLCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
                 {
+		    cout << "CLCT "<< (*digiItr) << endl;
 		    if ((*digiItr).getKeyStrip() ==  matchedLCT.getStrip()){
 			matchedCLCT = (*digiItr);
 			foundCLCT = true;
@@ -647,6 +649,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 const CSCALCTDigiCollection::Range& range =(*alctDigi_id).second;
                 for(CSCALCTDigiCollection::const_iterator digiItr = range.first; digiItr != range.second; ++digiItr)
                 {
+		    cout << "ALCT "<< (*digiItr) << endl;
 		    if ((*digiItr).getKeyWG() ==  matchedLCT.getKeyWG()){
 			matchedALCT = (*digiItr);
 			foundALCT = true;
