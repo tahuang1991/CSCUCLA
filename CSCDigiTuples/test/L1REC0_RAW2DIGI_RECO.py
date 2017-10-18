@@ -57,13 +57,13 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
                                            'keep *_csctfDigis_*_*',
                                            'keep *_*emtf*_*_*',
                                            'keep *_simEmtfDigis_*_*',
-										   'keep CSCDetIdCSCCorrelatedLCTDigiMuonDigiCollection_*_*_*',
+					   'keep CSCDetIdCSCCorrelatedLCTDigiMuonDigiCollection_*_*_*',
                                            'keep *_muonCSCDigis_*_*',
                                            'keep *_offlineBeamSpot_*_*',
-										   'keep *_standAloneMuons_*_*',
-										   'keep recoMuons_muons_*_RECO',
-										   'keep recoTracks_*Muons_*_RECO',
-										   'keep *CSC*_*_*_*'
+					   'keep *_standAloneMuons_*_*',
+					   'keep recoMuons_muons_*_RECO',
+					   'keep recoTracks_*Muons_*_RECO',
+					   'keep *CSC*_*_*_*'
                                            ),
     splitLevel = cms.untracked.int32(0)
 )

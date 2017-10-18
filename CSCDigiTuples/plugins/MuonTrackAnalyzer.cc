@@ -154,7 +154,8 @@ MuonTrackAnalyzer::clear(){
         segSt.clear();
         segRi.clear();
         segCh.clear();
-		segId.clear();
+	segChamberType.clear();
+	segId.clear();
         segeta.clear();
         segphi.clear();
         segx.clear();
@@ -169,6 +170,7 @@ MuonTrackAnalyzer::clear(){
 
         lctId.clear();
         lctQ.clear();
+        lctBX.clear();
         lctPat.clear();
         lctKWG.clear();
         lctKHS.clear();
@@ -188,6 +190,7 @@ MuonTrackAnalyzer::clear(){
 
         clctId.clear();
         clctQ.clear();
+        clctBX.clear();
         clctPat.clear();
         clctKHS.clear();
         clctCFEB.clear();
@@ -195,6 +198,7 @@ MuonTrackAnalyzer::clear(){
 
         alctId.clear();
         alctQ.clear();
+        alctBX.clear();
         alctKWG.clear();
         alctAc.clear();
         alctPB.clear();
@@ -211,7 +215,6 @@ MuonTrackAnalyzer::clear(){
         wireTimeOn.clear();
 
         stripId.clear();
-
         stripLay.clear();
         strip.clear();
         stripADCs.clear();
@@ -444,6 +447,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             segSt.push_back(chamberId.station());
             segRi.push_back(chamberId.ring());
             segCh.push_back(chamberId.chamber());
+	    segChamberType.push_back(chamberId.iChamberType());
             segId.push_back(chamber);
 	    std::cout <<"matched CSSegment "<< *(*rechit) << std::endl;
             GlobalPoint seggp = theCSC->idToDet((*rechit)->cscDetId())->surface().toGlobal((*rechit)->localPosition());
@@ -544,6 +548,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		cout <<"matchedLCT "<< matchedLCT << endl;
 	    	lctId.push_back(chamber);
 	    	lctQ.push_back(matchedLCT.getQuality());
+	    	lctBX.push_back(matchedLCT.getBX());
 	    	lctPat.push_back(matchedLCT.getPattern());
 	    	lctKWG.push_back(matchedLCT.getKeyWG());
 	    	lctKHS.push_back(matchedLCT.getStrip());
@@ -624,6 +629,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    if (foundCLCT){
                 clctId.push_back(chamber);
 		clctQ.push_back(matchedCLCT.getQuality());
+		clctBX.push_back(matchedCLCT.getBX());
                 clctPat.push_back(matchedCLCT.getPattern());
                 clctKHS.push_back(matchedCLCT.getKeyStrip());
                 clctCFEB.push_back(matchedCLCT.getCFEB());
@@ -667,6 +673,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    if (foundALCT){
 		alctId.push_back(chamber);
                 alctQ.push_back(matchedALCT.getQuality());
+                alctBX.push_back(matchedALCT.getBX());
                 alctKWG.push_back(matchedALCT.getKeyWG());
                 alctAc.push_back(matchedALCT.getAccelerator());
                 alctPB.push_back(matchedALCT.getCollisionB());
@@ -1006,10 +1013,10 @@ MuonTrackAnalyzer::beginJob()
 {
 	tree = fs->make<TTree>("CSCDigiTree","Muon Track Analyzer tree");
 
-    tree->Branch("Event_EventNumber",&Event_EventNumber,"Event_EventNumber/I");
-    tree->Branch("Event_RunNumber",&Event_RunNumber,"Event_RunNumber/I");
-    tree->Branch("Event_LumiSection",&Event_LumiSection,"Event_LumiSection/I");
-    tree->Branch("Event_BXCrossing",&Event_BXCrossing,"Event_BXCrossing/I");
+    //tree->Branch("Event_EventNumber",&Event_EventNumber,"Event_EventNumber/I");
+    //tree->Branch("Event_RunNumber",&Event_RunNumber,"Event_RunNumber/I");
+    //tree->Branch("Event_LumiSection",&Event_LumiSection,"Event_LumiSection/I");
+    //tree->Branch("Event_BXCrossing",&Event_BXCrossing,"Event_BXCrossing/I");
 
     //tree->Branch("ss",&ss);
     //tree->Branch("os",&os);
@@ -1023,7 +1030,8 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("segSt",&segSt);
     tree->Branch("segRi",&segRi);
     tree->Branch("segCh",&segCh);
-	tree->Branch("segId",&segId);
+    tree->Branch("segId",&segId);
+    tree->Branch("segChamberType",&segChamberType);
     tree->Branch("segeta",&segeta);
     tree->Branch("segphi",&segphi);
     tree->Branch("segx",&segx);
@@ -1038,6 +1046,7 @@ MuonTrackAnalyzer::beginJob()
 
     tree->Branch("lctId",&lctId);
     tree->Branch("lctQ",&lctQ);
+    tree->Branch("lctBX",&lctBX);
     tree->Branch("lctPat",&lctPat);
     tree->Branch("lctKWG",&lctKWG);
     tree->Branch("lctKHS",&lctKHS);
@@ -1059,6 +1068,7 @@ MuonTrackAnalyzer::beginJob()
 
     tree->Branch("clctId",&clctId);
     tree->Branch("clctQ",&clctQ);
+    tree->Branch("clctBX",&clctBX);
     tree->Branch("clctPat",&clctPat);
     tree->Branch("clctKHS",&clctKHS);
     tree->Branch("clctCFEB",&clctCFEB);
@@ -1066,11 +1076,12 @@ MuonTrackAnalyzer::beginJob()
 
     tree->Branch("alctId",&alctId);
     tree->Branch("alctQ",&alctQ);
+    tree->Branch("alctBX",&alctBX);
     tree->Branch("alctKWG",&alctKWG);
     tree->Branch("alctAc",&alctAc);
     tree->Branch("alctPB",&alctPB);
 
-    tree->Branch("wireId",&wireId);
+    /*tree->Branch("wireId",&wireId);
     tree->Branch("wireLay",&wireLay);
     tree->Branch("wireGrp",&wireGrp);
     tree->Branch("wireTimeOn",&wireTimeOn);
@@ -1086,6 +1097,7 @@ MuonTrackAnalyzer::beginJob()
     tree->Branch("compHS",&compHS);
     tree->Branch("compphi_fit",&compphi_fit);
     tree->Branch("compTimeOn",&compTimeOn);
+    */
 
 }
 

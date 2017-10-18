@@ -15,7 +15,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing('analysis')
-options.inputFiles = 'csc_forsync.root'
+options.inputFiles = '/fdata/hepx/store/user/tahuang/SingleMu_200k_80X_FlatPt05_50_Endcaponly_run2MC_GEN_SIM_DIGI_L1/SingleMu_200k_80X_FlatPt05_50_Endcaponly_run2MC_GEN_SIM_DIGI_L1/171016_221129/0000/out_L1_1.root'
 options.outputFile = 'evttree.root'
 options.parseArguments()
 
@@ -25,8 +25,8 @@ options.outputFile = m.group(1) + options.outputFile
 options.inputFiles[0] = "file://" + options.inputFiles[0] 
 
 
-process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v8'
-# process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v12'
+#process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v8'
+process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_v3'
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.options = cms.untracked.PSet( SkipEvent =
