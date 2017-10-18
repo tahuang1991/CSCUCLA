@@ -48,7 +48,7 @@ options = VarParsing('analysis')
 #options.inputFiles = 'output_l1_reco_2016G.root'
 #options.inputFiles = '/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/out_reco_1.root'
 #options.inputFiles = '/store/data/Run2016G/ZeroBias/RAW/v1/000/278/986/00000/12104D7A-0065-E611-B62C-FA163E52E986.root'
-options.inputFiles = ['/fdata/hepx/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/out_reco_1.root']
+#options.inputFiles = ['/fdata/hepx/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/out_reco_1.root']
 #options.inputFiles = ['/fdata/hepx/store/user/tahuang/JPsiToMuMu_Pt20to100-pythia8-gun/RAW2DIGI_RECO_Muons_JPsiToMuMu_v2/170712_091000/0000/out_reco_1.root']
 #options.outputFile = '/fdata/hepx/store/user/taohuang/CSCDigiFitting/evttree.root'
 options.parseArguments()
@@ -67,7 +67,7 @@ else:
     process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v12'
 #process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v11'
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.options = cms.untracked.PSet( 
 #SkipEvent = cms.untracked.vstring('ProductNotFound') )
 

@@ -51,6 +51,7 @@ if __name__ == "__main__":
   if len(sys.argv)>=2:
   	label = sys.argv[1]
 
+  chamberLUT = ["","ME1/b","ME1/2","ME1/3","ME1/a","ME2/1","ME2/2","ME3/1","ME3/2","ME4/1","ME4/2"]
   ## extension for figures - add more?
   ext = ".png"
 
@@ -73,12 +74,13 @@ if __name__ == "__main__":
   #import shutil
   #shutil.copy2('index.php', targetDir + 'index.php')
 
-  def CSCFitPlots():
+  def CSCFitPlots(inputdir, outputroot):
 
       #ch = TChain("DisplacedL1MuFilter_PhaseIIGE21_%s/L1MuTree"%ME0Segment)
     ch = TChain("MakeNtuple/CSCDigiTree")
 
     location0 = 'evttree.root'
+    location0 = 'Dataevtree.root'
 
     if doTest:
       treeHits = addfiles(ch, location0)
@@ -89,30 +91,14 @@ if __name__ == "__main__":
     else:
       #treeHits = addfiles(ch, "out_ana_rate.root")
       print "not doing test"
-      treeHits = addfiles(ch, "out_ana_0.root")
-      treeHits = addfiles(ch, "out_ana_1.root")
-      treeHits = addfiles(ch, "out_ana_2.root")
+      treeHits = addfiles(ch, inputdir)
 
     ## helper functions to make many plots!!
-    mapTH1F = ROOT.std.map("string,TH1F")()
-    mapTH2F = ROOT.std.map("string,TH2F")()
+    #mapTH1F = ROOT.std.map("string,TH1F")()
+    #mapTH2F = ROOT.std.map("string,TH2F")()
 
      
     ## binning
-    """
-    ptbin = [
-      1, 2.0,   2.5,   3.0,   3.5,   4.0,   4.5,   5.0,   6.0,   7.0,   8.0,
-      10.0,  12.0,  14.0,  16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,
-      45.0,  50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0]
-    myptbin = np.asarray(ptbin)
-    nmyptbin = len(myptbin) - 1
-
-    etabin = [
-      0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95,
-      1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.55, 1.6, 1.65, 1.7, 1.75, 1.8, 1.85, 1.9, 1.95,
-      2.0, 2.05, 2.1, 2.15, 2.2, 2.25, 2.3, 2.35, 2.4, 2.45, 2.5]
-    myetabin = np.asarray(etabin)
-    """
 
     CSCDigistree = TTree("CSCDigistree", "CSCDigistree")
     muonpt = n.zeros(1, dtype=float) 
@@ -127,9 +113,13 @@ if __name__ == "__main__":
     segSt = n.zeros(1, dtype=int)
     segRi = n.zeros(1, dtype=int)
     segCh = n.zeros(1, dtype=int)
+    segChamberType = n.zeros(1, dtype=int)
     segId = n.zeros(1, dtype=int)
 
     lctPat = n.zeros(1, dtype=int)
+    lctBX = n.zeros(1, dtype=int)
+    lctKWG = n.zeros(1, dtype=int)
+    lctKHS = n.zeros(1, dtype=int)
     lctBend = n.zeros(1, dtype=int)
 
     lctId = n.zeros(1, dtype=int)
@@ -141,6 +131,12 @@ if __name__ == "__main__":
 
     nofit_phiDiff = n.zeros(1, dtype=float)
     fit_phiDiff = n.zeros(1, dtype=float)
+
+    alctBX = n.zeros(1, dtype=int)
+    alctKWG = n.zeros(1, dtype=int)
+    clctBX = n.zeros(1, dtype=int)
+    clctBend = n.zeros(1, dtype=int)
+    clctKHS = n.zeros(1, dtype=int)
 
     CSCDigistree.Branch("muonpt",muonpt,"muonpt/D")
     CSCDigistree.Branch("muoneta",muoneta,"muoneta/D")
@@ -155,11 +151,13 @@ if __name__ == "__main__":
     CSCDigistree.Branch("segSt",segSt,"segSt/I")
     CSCDigistree.Branch("segRi",segRi,"segRi/I")
     CSCDigistree.Branch("segCh",segCh,"segCh/I")
+    CSCDigistree.Branch("segChamberType",segChamberType,"segChamberType/I")
 
     CSCDigistree.Branch("lctPat", lctPat, "lctPat/I")
     CSCDigistree.Branch("lctBend", lctBend, "lctBend/I")
-    
-
+    CSCDigistree.Branch("lctBX", lctBX, "lctBX/I")
+    CSCDigistree.Branch("lctKWG", lctKWG, "lctKWG/I")
+    CSCDigistree.Branch("lctKHS", lctKHS, "lctKHS/I")
     CSCDigistree.Branch("lctId",lctId,"lctId/I")
     CSCDigistree.Branch("lcteta",lcteta,"lcteta/D")
     CSCDigistree.Branch("lctphi",lctphi,"lctphi/D")
@@ -167,17 +165,24 @@ if __name__ == "__main__":
     CSCDigistree.Branch("lctphi_fit",lctphi_fit,"lctphi_fit/D")
     CSCDigistree.Branch("dRSegLCT", dRSegLCT,"dRSegLCT/D")
 
+    CSCDigistree.Branch("lctPat", lctPat, "lctPat/I")
+    CSCDigistree.Branch("lctBend", lctBend, "lctBend/I")
+    CSCDigistree.Branch("lctId",lctId,"lctId/I")
     CSCDigistree.Branch("nofit_phiDiff", nofit_phiDiff, "nofit_phiDiff/D")
     CSCDigistree.Branch("fit_phiDiff", fit_phiDiff, "fit_phiDiff/D")
 
-    h_eventcount = TH1F("h_eventcount","",10,0,10)
-    etapartition = [1.2,1.4,1.6,1.8,2.0,2.15]
-    nparity = 4
+    CSCDigistree.Branch("clctBX", clctBX, "clctBX/I")
+    CSCDigistree.Branch("clctBend", clctBend, "clctBend/I")
+    CSCDigistree.Branch("clctKHS", clctKHS, "clctKHS/I")
+    CSCDigistree.Branch("alctBX", alctBX, "alctBX/I")
+    CSCDigistree.Branch("alctKWG", alctKWG, "alctKWG/I")
+
+
+    #h_eventcount = TH1F("h_eventcount","",10,0,10)
 
     maxEntries = ch.GetEntries()
     #if doTest:
     #  maxEntries = 1000000
-
 
     nEvents = maxEntries
     print "nEvents", nEvents
@@ -185,22 +190,23 @@ if __name__ == "__main__":
       if k%10==0: print "Processing event", k
       print "nEvents", nEvents, "k = ",k
 
-      h_eventcount.Fill(1)
+      #h_eventcount.Fill(1)
       ch.GetEntry(k)
       treeHits = ch
 
       def initbranches():
 	    #init branches
-        muonpt[0] = -1
-        muonphi[0] = 99
-        muoneta[0] = 99
-        muonq[0] = 99
-        Nseg[0] = 0
+	#muonpt[0] = -1
+        #muonphi[0] = 99
+        #muoneta[0] = 99
+        #muonq[0] = 99
+        #Nseg[0] = 0
         segEc[0] = 99
         segSt[0] = 99
         segRi[0] = 99
         segCh[0] = 99
-        segId[0] = 99
+        segId[0] = 9999
+	segChamberType[0] = 99
         segeta[0] = 99
         segphi[0] = 99
         lcteta[0] = 99
@@ -208,10 +214,18 @@ if __name__ == "__main__":
         lctphi_fit[0] = 99
         lcteta_fit[0] = 99
         lctId[0] = 99
+        lctBX[0] = 99
+        lctKHS[0] = 99
+        lctKWG[0] = 99
         lctPat[0] = 99
         lctBend[0] = 99
         nofit_phiDiff[0] = 99
         fit_phiDiff[0] = 99
+        alctBX[0] = 99
+        alctKWG[0] = 99
+        clctBX[0] = 99
+        clctBend[0] = 99
+        clctKHS[0] = 99
 
       def phi_difference (phi1, phi2):
         dPhi = phi1-phi2
@@ -223,7 +237,6 @@ if __name__ == "__main__":
 
 
 
-      initbranches()
 
 
 
@@ -233,10 +246,12 @@ if __name__ == "__main__":
       muonq[0] = treeHits.q
       Nseg[0] = treeHits.Nseg
       for i in range(0,Nseg):
+        initbranches()
         segEc[0] = treeHits.segEc[i]
         segSt[0] = treeHits.segSt[i]
         segRi[0] = treeHits.segRi[i]
         segCh[0] = treeHits.segCh[i]
+	segChamberType[0] = treeHits.segChamberType[i]
         segId[0] = treeHits.segId[i]
         segeta[0] = treeHits.segeta[i]
         segphi[0] = treeHits.segphi[i]
@@ -262,32 +277,60 @@ if __name__ == "__main__":
             dRSegLCT[0] = treeHits.dRSegLCT[lctindex]
             lctPat[0] = treeHits.lctPat[lctindex]
             lctBend[0] = treeHits.lctBend[lctindex]
+            lctBX[0] = treeHits.lctBX[lctindex]
+            lctKHS[0] = treeHits.lctKHS[lctindex]
+            lctKWG[0] = treeHits.lctKWG[lctindex]
         
             #if 5 < muonpt[0] < 10:
             nofit_phiDiff[0] = phi_difference(segphi[0], lctphi[0])
             fit_phiDiff[0] = phi_difference(segphi[0], lctphi_fit[0])
         #dRnew = deltaR(segeta, segphi, lcteta, lctphi)
+	clctindex = 99
+        for i in range(0, len(list(treeHits.clctId))):
+	    if (treeHits.clctId[i] == segId[0]):
+		clctindex = i
+			
+	if clctindex != 99:
+	    print "clct index ", clctindex,  " lct index ",lctindex
+            clctBend[0] = treeHits.clctBend[clctindex]
+            clctBX[0] = treeHits.clctBX[clctindex]
+            clctKHS[0] = treeHits.clctKHS[clctindex]
         
-            print "muon pt ",muonpt," Nseg ",Nseg[0], " segeta ",segeta[0]," segphi ",segphi[0], " lcteta ",lcteta[0], " lctphi ",lctphi[0]," lctphi_fit ",lctphi_fit[0] ," dRSegLCT ",dRSegLCT[0]," mindR ",mindR," lctBend ",lctBend[0]," lctPat ",lctPat," nofit_phiDiff ",nofit_phiDiff[0]," fit_phiDiff ",fit_phiDiff[0]
+	if (clctindex < 99 and lctindex < 99 and treeHits.clctKHS[clctindex] != treeHits.lctKHS[lctindex]):
+		print "id ",treeHits.clctId[clctindex], " CLCL HS ",treeHits.clctKHS[clctindex]," LCT HS ",treeHits.lctKHS[lctindex]
+	alctindex = 99
+        for i in range(0, len(list(treeHits.alctId))):
+	    if (treeHits.alctId[i] == segId[0]):
+		alctindex = i
+	if alctindex != 99:
+            alctBX[0] = treeHits.alctBX[alctindex]
+            alctKWG[0] = treeHits.alctKWG[alctindex]
+        if lctindex != 99: 
+		#print "muon pt ",muonpt," Nseg ",Nseg[0], " segeta ",segeta[0]," segphi ",segphi[0], " lcteta ",lcteta[0], " lctphi ",lctphi[0]," lctphi_fit ",lctphi_fit[0] ," dRSegLCT ",dRSegLCT[0]," mindR ",mindR," lctBend ",lctBend[0]," lctPat ",lctPat
             CSCDigistree.Fill()
 
 
 
 
     #makeDPhiPlot(h_dphi_ME11_ME21, "dphi_ME11_ME21")
-    c = TCanvas("c","c",800,600)
-    c.Clear()
-    h_eventcount.Draw()
-    c.SaveAs("h_eventcount.png")
+    #c = TCanvas("c","c",800,600)
+    #c.Clear()
+    #h_eventcount.Draw()
+    #c.SaveAs("h_eventcount.png")
     #make plots before write into root 
-    targetroot = TFile("target.root","UPDATE")
-    h_eventcount.Write()
+    targetroot = TFile(outputroot,"UPDATE")
+    #h_eventcount.Write()
     #h_dphi_ME11_ME21.Write()
     CSCDigistree.Write()
     targetroot.Close()
  
 
     ## trigger rate plots
-  CSCFitPlots()
+  inputdir_data = "/fdata/hepx/store/user/tahuang/SingleMuon/MuonTrackAna/"
+  output_data = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/DataNtuple_20171017.root"
+  inputdir_MC = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_bunchTimingOffsetsZero/MuonTrackAna/"
+  output_MC = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/MCNtuple_20171017.root"
+  CSCFitPlots(inputdir_data, output_data)
+  CSCFitPlots(inputdir_MC, output_MC)
   #displacedL1MuHybridTriggerRate("FakePadsPU250")
 
