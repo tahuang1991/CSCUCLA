@@ -3,9 +3,9 @@ import os
 import sys
 
 
-jobdir = "TestJobs"
+jobdir = "TestJobsMC"
 os.system("mkdir -p %s" % jobdir)
-submitscript = open("submitallAna.sh","w")
+submitscript = open("submitallAnaMC.sh","w")
 submitscript.write("""#!/bin/bash
 cd $CMSSW_BASE/src/CSCUCLA/CSCDigiTuples/test/
 	""")
@@ -32,13 +32,17 @@ def useInputDir(inputDir, onEOS = True):
             theInputFiles.extend([my_dir[16:] + x for x in ls if x.endswith('.root')])
 
     #process.source.fileNames = cms.untracked.vstring(*theInputFiles)
-    print "all inputfiles: \n",theInputFiles
+    print "InputFiles ",theInputFiles
     return theInputFiles
 
 
-Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/']
+#Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/']
+#Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_bunchTimingOffsetsZero/']
+Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_updatebunchTimingOffsetsv1/']
 inputfiles =  useInputDir(Inputdir)
-outdir = "/fdata/hepx/store/user/tahuang/SingleMuon/MuonTrackAna_v2/"
+#outdir = "/fdata/hepx/store/user/tahuang/SingleMuon/MuonTrackAna/"
+#outdir = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_bunchTimingOffsetsZero/MuonTrackAna_v2/"
+outdir = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_updatebunchTimingOffsetsv1/MuonTrackAna/"
 os.system("mkdir -p "+outdir)
 for ijob in range(0, len(inputfiles)):
 
@@ -46,7 +50,7 @@ for ijob in range(0, len(inputfiles)):
 	outputfile = outdir+"evtree_%d.root"%ijob
 	jobscript = open("{0}/Send_RunAna_{1}.slrm".format(jobdir, ijob), "w")
 	jobscript.write("""#!/bin/bash
-#SBATCH -J RunDataana
+#SBATCH -J RunMCana
 #SBATCH -p background-4g
 #SBATCH -n 1
 #SBATCH --mem-per-cpu=2000
@@ -62,7 +66,7 @@ source ~/.bashrc
 . /etc/profile.d/modules.sh
 cd $CMSSW_BASE/src/CSCUCLA/CSCDigiTuples/test/
 eval `scramv1 runtime -sh`
-cmsRun runMuonTrackAna_cfg.py inputFiles={infile} outputFile={outputfile} 
+cmsRun runMuonTrackAna_MC_cfg.py inputFiles={infile} outputFile={outputfile} &> /dev/null
 echo "job$jobid starts, `date`"
 echo "job$jobid is done, `date`"
 exit 0""".format(infile=infile, outputfile = outputfile))
@@ -71,7 +75,7 @@ exit 0""".format(infile=infile, outputfile = outputfile))
 	submitscript.write("""
 sbatch {0}/Send_RunAna_{1}.slrm""".format(jobdir, ijob))
 submitscript.close()
-os.system("chmod +x submitallAna.sh")
+os.system("chmod +x submitallAnaMC.sh")
 
 #python PlotterProducer.py -b HaddNo {jobtype}
 #os.system("./submitallAna.sh")

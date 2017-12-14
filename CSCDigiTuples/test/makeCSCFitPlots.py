@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
   ########set_style()
 
-  doTest = True
+  doTest = False
 
 
   targetDir = label + "/"
@@ -147,10 +147,10 @@ if __name__ == "__main__":
     CSCDigistree.Branch("segeta",segeta,"segeta/D")
     CSCDigistree.Branch("segphi",segphi,"segphi/D")
     CSCDigistree.Branch("segId",segId,"segId/I")
-    CSCDigistree.Branch("segEc",segEc,"segEc/I")
-    CSCDigistree.Branch("segSt",segSt,"segSt/I")
-    CSCDigistree.Branch("segRi",segRi,"segRi/I")
-    CSCDigistree.Branch("segCh",segCh,"segCh/I")
+    CSCDigistree.Branch("endcap",segEc,"segEc/I")
+    CSCDigistree.Branch("station",segSt,"segSt/I")
+    CSCDigistree.Branch("ring",segRi,"segRi/I")
+    CSCDigistree.Branch("chamber",segCh,"segCh/I")
     CSCDigistree.Branch("segChamberType",segChamberType,"segChamberType/I")
 
     CSCDigistree.Branch("lctPat", lctPat, "lctPat/I")
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     #h_eventcount.Draw()
     #c.SaveAs("h_eventcount.png")
     #make plots before write into root 
-    targetroot = TFile(outputroot,"UPDATE")
+    targetroot = TFile(outputroot,"RECREATE")
     #h_eventcount.Write()
     #h_dphi_ME11_ME21.Write()
     CSCDigistree.Write()
@@ -326,11 +326,15 @@ if __name__ == "__main__":
  
 
     ## trigger rate plots
-  inputdir_data = "/fdata/hepx/store/user/tahuang/SingleMuon/MuonTrackAna/"
-  output_data = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/DataNtuple_20171017.root"
-  inputdir_MC = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_bunchTimingOffsetsZero/MuonTrackAna/"
-  output_MC = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/MCNtuple_20171017.root"
-  CSCFitPlots(inputdir_data, output_data)
+  #inputdir_data = "/fdata/hepx/store/user/tahuang/SingleMuon/MuonTrackAna/"
+  #output_data = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/DataNtuple_20171017.root"
+  #inputdir_MC = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_bunchTimingOffsetsZero/MuonTrackAna/"
+  #output_MC = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/MCNtuple_20171017.root"
+  #inputdir_MC = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_updatebunchTimingOffsetsv1/MuonTrackAna/evtree_all_v2.root"
+  #output_MC = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/MCNtuple_updatebunchtimingv1_20171017.root"
+  inputdir_MC = "/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_updatebunchTimingOffsetsv1/MuonTrackAna/evtree_JPsi_noffsetchange.root"
+  output_MC = "/fdata/hepx/store/user/tahuang/CSCDigisNtuples/MCNtuple_beforeupdatebunchtiming_20171017.root"
+  #CSCFitPlots(inputdir_data, output_data)
   CSCFitPlots(inputdir_MC, output_MC)
   #displacedL1MuHybridTriggerRate("FakePadsPU250")
 

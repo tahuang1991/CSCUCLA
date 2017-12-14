@@ -16,7 +16,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 #process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
 #process.load("Configuration.StandardSequences.Reconstruction_cff")
 
-isData = True
+isData = False
 ## helper for files on dCache/EOS (LPC)
 def useInputDir(process, inputDir, onEOS = True):
     theInputFiles = []
@@ -43,7 +43,7 @@ def useInputDir(process, inputDir, onEOS = True):
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing('analysis')
-#options.inputFiles = 'out_reco_1.root'
+options.inputFiles = 'out_reco_1.root'
 #options.inputFiles = 'output_l1_reco_2016G_allcollections.root'
 #options.inputFiles = 'output_l1_reco_2016G.root'
 #options.inputFiles = '/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/out_reco_1.root'
@@ -67,8 +67,7 @@ else:
     process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v12'
 #process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v11'
 
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.options = cms.untracked.PSet( 
 #SkipEvent = cms.untracked.vstring('ProductNotFound') )
 
@@ -80,7 +79,8 @@ process.source = cms.Source ("PoolSource",
 Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMuon/RAW2DIGI_RECO_Muons_Run281976/170616_102321/0000/']
 Inputdir = ['/fdata/hepx/store/user/tahuang/JPsiToMuMu_Pt20to100-pythia8-gun/RAW2DIGI_RECO_Muons_JPsiToMuMu_v2/170712_091000/0000/']
 #Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_GEN_SIM_DIGI_L1_ACLTTiming_updatebunchTimingOffsetsTo0/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_GEN_SIM_DIGI_L1_ACLTTiming_updatebunchTimingOffsetsTo0/171017_141416/0000/']
-#process =  useInputDir(process, Inputdir)
+#Inputdir = ['/fdata/hepx/store/user/tahuang/SingleMu_80X_200k_Pt100_Endcaponly_run2MC_RECO_updatebunchTimingOffsetsv1/']
+process =  useInputDir(process, Inputdir)
 
 
 process.MessageLogger = cms.Service("MessageLogger",
@@ -112,9 +112,9 @@ process.MakeNtuple = cms.EDAnalyzer("MuonTrackAnalyzer",
         #alctDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCALCTDigi"),
         #clctDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCCLCTDigi"),
         #lctDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCCorrelatedLCTDigi"),
-        alctDigiTag = cms.InputTag("simCscTriggerPrimitiveDigis"),
-        clctDigiTag = cms.InputTag("simCscTriggerPrimitiveDigis"),
-        lctDigiTag  = cms.InputTag("simCscTriggerPrimitiveDigis"),
+        alctDigiTag = cms.InputTag("cscTriggerPrimitiveDigis"),
+        clctDigiTag = cms.InputTag("cscTriggerPrimitiveDigis"),
+        lctDigiTag  = cms.InputTag("cscTriggerPrimitiveDigis"),
         compDigiTag = cms.InputTag("muonCSCDigis", "MuonCSCComparatorDigi"),
         csctfDigiTag = cms.InputTag("csctfDigis"),
         #cscSegmentTag = cms.InputTag("cscSegments"),
@@ -146,8 +146,8 @@ process.out = cms.OutputModule("PoolOutputModule",
 	)
 #process.p = cms.Path(process.muonCSCDigis * process.csc2DRecHits * process.cscSegments *  process.MakeNtuple)
 #process.p = cms.Path(process.muonCSCDigis * process.csc2DRecHits * process.cscSegments )
-#process.p = cms.Path( process.cscTriggerPrimitiveDigis + process.MakeNtuple )
-process.p = cms.Path(process.MakeNtuple)
+process.p = cms.Path( process.cscTriggerPrimitiveDigis + process.MakeNtuple )
+#process.p = cms.Path(process.MakeNtuple)
 #process.p = cms.Path( process.cscTriggerPrimitiveDigis)
 #process.endp = cms.EndPath(process.out)
 

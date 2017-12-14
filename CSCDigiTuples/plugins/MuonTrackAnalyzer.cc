@@ -505,7 +505,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator lctDigi_id=cscLCTDigi->begin(); lctDigi_id!=cscLCTDigi->end(); lctDigi_id++)
             {
                 CSCDetId lctID = (*lctDigi_id).first;
-		std::cout <<"to match LCT CSCid "<<  lctID << std::endl;
+		//std::cout <<"to match LCT CSCid "<<  lctID << std::endl;
                 int idBuf = chamberSerial(lctID);
                 if(idBuf != chamber) continue;
 
@@ -817,7 +817,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			//take the average position 
 			perp_tmp = perp_tmp/(p.second).size();
 			phi_tmp = phi_tmp/(p.second).size();
-			std::cout <<"detid "<< detId <<" perp "<< perp_tmp <<" phi "<< phi_tmp <<" z "<< z_tmp << std::endl;
+			//std::cout <<"detid "<< detId <<" perp "<< perp_tmp <<" phi "<< phi_tmp <<" z "<< z_tmp << std::endl;
 			perp += perp_tmp;
 			phis.push_back(phi_tmp);
 			zs.push_back(z_tmp);
@@ -851,7 +851,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			  alpha = csc_gp.phi();
 			  beta = 0.0;
 		  }
-			  std::cout <<"fitting results: alpha "<< alpha <<" beta "<< beta << std::endl;
+			  //std::cout <<"fitting results: alpha "<< alpha <<" beta "<< beta << std::endl;
 		  vector<float> phifitbuf;
 		  for (int i=0; i<6; i++){
 			  fit_z_layers[i] = cscChamber->layer(i+1)->centerOfStrip(20).z();
@@ -865,7 +865,7 @@ MuonTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			  //if (stripBits > 0)
 				//fit_phi_layers[i] = (std::floor(fit_phi_layers[i]/stripPhiPitch) + 0.5)*stripPhiPitch;
 			  //if (verbose_>0)
-				std::cout <<"i "<< i <<" fit_z "<< fit_z_layers[i]<< " fit_phi "<< fit_phi_layers[i]<<" perp "<< perp << std::endl;
+			//std::cout <<"i "<< i <<" fit_z "<< fit_z_layers[i]<< " fit_phi "<< fit_phi_layers[i]<<" perp "<< perp << std::endl;
 		  }
 		  compphi_fit.push_back(phifitbuf);
 
